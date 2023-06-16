@@ -2,3 +2,6 @@ name = "DimensionalityReduction"
 uuid = "cba56e5c-055b-4747-b109-fd77ca0a0b08"
 authors = ["johan "]
 version = "0.1.0"
+
+[deps]
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
