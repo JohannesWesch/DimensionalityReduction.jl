@@ -2,10 +2,10 @@ module DimensionalityReduction
 
 using PyCall
 
-@pyinclude("../src/NetworkUpdate.py")
+include("Onnx.jl")
 
 function reduce(x, y)
-    v = py"update_network"(x, y)
+    v = Onnx.update_network(x, y)
     return v
 end
 

@@ -1,6 +1,37 @@
 import numpy as np
 import onnx
 
+import numpy as np
+
+
+def propagate_box(weights, box_constraints):
+    num_input_neurons = weights.shape[1]
+    num_output_neurons = weights.shape[0]
+    activation = np.zeros((num_output_neurons, 2))
+
+    for i in range(0, num_output_neurons):
+        for j in range(0, num_input_neurons):
+            if weights[i][j] >= 0:
+                activation[i][0] += box_constraints[i][0] * weights[i][j]
+                activation[i][1] += box_constraints[i][1] * weights[i][j]
+            else:
+                activation[i][0] += box_constraints[i][1] * weights[i][j]
+                activation[i][1] += box_constraints[i][0] * weights[i][j]
+    return activation
+
+
+def remove_zero_activation_weights(weights, box_constraints):
+    weights = np.array(weights)
+    num_input_neurons = weights.shape[1]
+    num_output_neurons = weights.shape[0]
+    activation = propagate_box(weights, box_constraints)
+    for i in range(0, num_output_neurons):
+        if activation[i][1] <= 0:
+            weights[i] = np.zeros(num_input_neurons)
+
+    return weights
+
+
 def get_num_inputs_outputs(model):
     inputs = model.graph.input
     assert len(inputs) == 1, f"expected single onnx network input, got: {inputs}"
@@ -33,12 +64,13 @@ def compact_svd(weights):
     s = np.diagflat(s)
     return u, s, v
 
-def update_network(onnx_input_filename, onnx_output_filename):
+def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
     # load network
     model = onnx.load(onnx_input_filename)
 
     init = model.graph.initializer[1] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
+    w = remove_zero_activation_weights(w, box_constraints)
 
     u, s, v = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
 
