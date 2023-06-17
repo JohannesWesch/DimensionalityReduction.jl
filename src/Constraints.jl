@@ -11,8 +11,9 @@ function get_box_constraints(vnnlib_file)
     return b, n_input
 end
 
-function get_A_b(vnnlib_file)
-    box_constraints, n_input = get_box_constraints(vnnlib_file)
+function get_A_b_from_box(box_constraints)
+    n_input = size(box_constraints)[1]
+    print(n_input)
 
     num_constraints = 2 * n_input
     num_variables = n_input

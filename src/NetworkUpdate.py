@@ -70,7 +70,7 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
 
     init = model.graph.initializer[1] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
-    # w = remove_zero_activation_weights(w, box_constraints)
+    w = remove_zero_activation_weights(w, box_constraints)
 
     u, s, v = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
 
@@ -94,4 +94,4 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
             dim.dim_value = new_input_dim
 
     onnx.save(model, onnx_output_filename)
-    return v
+    return v, new_input_dim
