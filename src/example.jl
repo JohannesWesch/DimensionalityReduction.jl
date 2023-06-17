@@ -5,4 +5,4 @@ import .DimensionalityReduction: reduce
 reduce("benchmarks/mnistfc/mnist-net_256x4.onnx", 
         "benchmarks/mnistfc_reduced/test3.vnnlib",
         "benchmarks/mnistfc_reduced/mnist-net_256x4.onnx",
-        "benchmarks/mnistfc_reduced/test3_updated.vnnlib", 2)
+        "benchmarks/mnistfc_reduced/test3_updated.vnnlib", 40)

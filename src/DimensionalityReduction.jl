@@ -17,7 +17,7 @@ function reduce(onnx_input, vnnlib_input, onnx_output, vnnlib_output, new_dim)
 
     # variables = collect(1:new_input_dim)
     variables = collect(1:new_dim)
-    new_bounds = approximate(A, b, variables)
+    new_bounds = approximate_parallel(A, b, variables)
 
     open(vnnlib_output, "w") do file
         for i in 1:size(new_bounds, 1)
