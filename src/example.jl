@@ -1,8 +1,8 @@
-include("DimensionalityReduction.jl")
 using Revise
+include("DimensionalityReduction.jl")
 import .DimensionalityReduction: reduce
 
-reduce("benchmarks/mnist/mnist-net_256x4.onnx", 
-        "benchmarks/mnist_reduced/test3.vnnlib",
-        "benchmarks/mnist_reduced/mnist-net_256x4.onnx",
-        "benchmarks/mnist_reduced/test3_updated.vnnlib", 2)
+reduce("benchmarks/mnistfc/mnist-net_256x4.onnx", 
+        "benchmarks/mnistfc_reduced/test3.vnnlib",
+        "benchmarks/mnistfc_reduced/mnist-net_256x4.onnx",
+        "benchmarks/mnistfc_reduced/test3_updated.vnnlib", 2)
