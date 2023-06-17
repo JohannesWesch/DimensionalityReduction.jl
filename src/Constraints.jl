@@ -1,47 +1,34 @@
 using VNNLib
 
-function get_c_d(vnnlib_file)
+function get_box_constraints(vnnlib_file)
     f, n_input, _ = get_ast(vnnlib_file)
-
-    b =  Matrix{Float64}[]
-
-    for (bounds, matrix, bias, num) in f
-    push!(b, bounds)
-    break
+    global b = []
+    
+    for (bounds, _, _, _) in f
+        global b = bounds[1:n_input, 1:2]
+        break
     end
+    return b, n_input
+end
 
-    b = b[1]
-    b = b[:]
+function get_A_b(vnnlib_file)
+    box_constraints, n_input = get_box_constraints(vnnlib_file)
 
     num_constraints = 2 * n_input
     num_variables = n_input
 
-    c = zeros(num_constraints, num_variables)
-    d = zeros(num_constraints, 1)
+    A = zeros(num_constraints, num_variables)
+    b = zeros(num_constraints, 1)
 
     for i in 1:n_input
-    c[i, i] = -1
-    c[n_input + i, i] = 1
+        A[i, i] = -1
+        A[n_input + i, i] = 1
     end
 
     for i in 1:n_input
-    d[i] = -b[2*i]
-    d[i + n_input] = b[2*i + 1]
+        b[i] = -box_constraints[i, 1]
+        b[i + n_input] = box_constraints[i, 2]
     end
 
-    return c, d
-end
-
-function get_box_constraints(vnnlib_file)
-    f, n_input, _ = get_ast(vnnlib_file)
-
-    b =  Matrix{Float64}[]
-
-    for (bounds, matrix, bias, num) in f
-    push!(b, bounds)
-    break
-    end
-
-    b = b[1]
-    return b
+    return A, b
 end
