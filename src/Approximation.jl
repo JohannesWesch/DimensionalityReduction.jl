@@ -1,18 +1,19 @@
 using JuMP, Gurobi
 using Base.Threads
 
-function approximate(A, b, variables)
-    approximate_box(A, b, variables)
+function approximate(A, b, box_constraints, variables)
+    approximate_box(A, b, box_constraints, variables)
 end
 
 # returns as output matrix with upper and lower bounds of the specified variables
-function approximate_box(A, b, variables)
+function approximate_box(A, b, box_constraints, variables)
     new_bounds = zeros(length(variables), 2)
     model = Model(Gurobi.Optimizer)
     set_attribute(model, "TimeLimit", 100)
     set_attribute(model, "Presolve", 0)
 
     @variable(model, x[1:size(A, 2)])
+    # @variable(model, box_constraints[i, 1] <= x[i = 1:size(A, 2)] <= box_constraints[i, 2])
     @constraint(model, A * x .<= b)
     
     for i in variables

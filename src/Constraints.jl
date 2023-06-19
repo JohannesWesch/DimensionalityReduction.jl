@@ -1,7 +1,14 @@
 using VNNLib
+using PyCall
+
+@pyinclude("src/VNNLibConverter.py")
 
 function get_box_constraints(vnnlib_file)
-    f, n_input, _ = get_ast(vnnlib_file)
+    
+    vnnlib_file_converted = vnnlib_file * "_converted"
+    convert_vnnlib(vnnlib_file, vnnlib_file_converted)
+    
+    f, n_input, _ = get_ast(vnnlib_file_converted)
     global b = []
     
     for (bounds, _, _, _) in f
@@ -31,4 +38,11 @@ function get_A_b_from_box(box_constraints)
     end
 
     return A, b
+end
+
+function convert_vnnlib(vnnlib_file, vnnlib_file_converted)
+    s = py"get_input_constraints"(vnnlib_file)
+    f = open(vnnlib_file_converted, "w")
+    write(f, s)
+    close(f)
 end
