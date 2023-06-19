@@ -20,7 +20,13 @@ function reduce(onnx_input, vnnlib_input, onnx_output, vnnlib_output, variables)
     # variables = collect(1:new_dim)
     new_bounds = approximate(A, b, variables)
 
-    #=open(vnnlib_output, "w") do file
+    py"create_vnnlib_from_lower_upper_bound"(new_bounds, length(variables), 10, vnnlib_input, vnnlib_output)
+ 
+end
+
+end # module DimensionalityReduction
+
+#=open(vnnlib_output, "w") do file
         for i in 1:size(new_bounds, 1)
             for j in 1:size(new_bounds, 2)
                 write(file, string(new_bounds[i, j], "\t"))
@@ -28,9 +34,3 @@ function reduce(onnx_input, vnnlib_input, onnx_output, vnnlib_output, variables)
             write(file, "\n")
         end
     end=#
-
-    py"create_vnnlib_from_lower_upper_bound"(new_bounds, length(variables), 10, vnnlib_input, vnnlib_output)
- 
-end
-
-end # module DimensionalityReduction
