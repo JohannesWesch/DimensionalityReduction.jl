@@ -3,21 +3,20 @@ using Base.Threads
 
 include("Constraints.jl")
 
-function approximate(box_constraints, V, new_input_dim, approx)
+function approximate(A, b, box_constraints, V, new_input_dim, approx)
     new_constraints = new_box_constraints(V, box_constraints)
     A₁, b₁ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
     if approx == 1
         return A₁, b₁
     elseif approx == 2
         A₂, b₂ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
-    
-        A = vcat(A₁, A₂)
-        b = vcat(b₁, b₂)
-        return A, b
-    elseif approx = 3
+        A₃ = vcat(A₁, A₂)
+        b₃ = vcat(b₁, b₂)
+        return A₃, b₃
+    elseif approx == 3
 
     else
-        throw(ArgumentError("parameter must be between one and three"))
+        throw(ArgumentError("parameter must be between 1 and 3"))
     end
     
 end
@@ -36,14 +35,10 @@ function new_box_constraints(V, bounds)
 end
 
 function approximate_other_dimensions(A, b, bounds, new_input_dim)
-    A_new = A[1:end, 1:new_input_dim]
+    A_new = A[:, 1:new_input_dim]
     b_new = b
-    
-    for i in eachindex(b)
-        for j in (new_input_dim + 1):size(A)[2]
-            b_new[i] += bounds[j, 1] * A[i, j]
-        end
-    end
+
+    b_new -= A[:, new_input_dim + 1:size(A)[2]] * bounds[new_input_dim + 1:size(A)[2], 1]
     return A_new, b_new
 end
 
@@ -110,5 +105,11 @@ end
                 new_box_constraints[i, 1] += V[i, j] * box_constraints[j, 2]
                 new_box_constraints[i, 2] += V[i, j] * box_constraints[j, 1]
             end
+        end
+    end
+
+    for i in eachindex(b)
+        for j in (new_input_dim + 1):size(A)[2]
+            b_new[i] += bounds[j, 1] * A[i, j]
         end
     end=#
