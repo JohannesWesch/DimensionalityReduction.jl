@@ -1,15 +1,13 @@
 using VNNLib
 using PyCall
+include("PathGenerator.jl")
 
 @pyinclude("src/VNNLibConverter.py")
 
-function get_box_constraints(vnnlib_file)
+function get_box_constraints(vnnlib_file, vnnlib_output)
+    convert_vnnlib(vnnlib_file, vnnlib_output)
     
-    file = split(vnnlib_file, ".")
-    vnnlib_file_converted = join(file[1:end-1], ".") * "_converted." * file[end]
-    convert_vnnlib(vnnlib_file, vnnlib_file_converted)
-    
-    f, n_input, n_output = get_ast(vnnlib_file_converted)
+    f, n_input, n_output = get_ast(vnnlib_output)
     global b = []
     
     for (bounds, _, _, _) in f

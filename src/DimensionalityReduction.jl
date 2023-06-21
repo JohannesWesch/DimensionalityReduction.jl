@@ -1,16 +1,21 @@
 module DimensionalityReduction
 
-export reduce, reduce_network, calculate_polytope
+export reduce
 
 using PyCall
 using DelimitedFiles
 include("Constraints.jl")
 include("Approximation.jl")
+include("PathGenerator.jl")
 @pyinclude("src/NetworkUpdate.py")
 @pyinclude("src/VNNLibGenerator.py")
 
-function reduce(onnx_input, vnnlib_input, onnx_output, vnnlib_output, approx=1)
-    box_constraints, output_dim = get_box_constraints(vnnlib_input)
+function reduce(onnx_input, vnnlib_input, output, approx=1)
+    onnx_output = onnx_path(onnx_input, vnnlib_input, output)
+    vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output)
+
+    box_constraints, output_dim = get_box_constraints(vnnlib_input, vnnlib_output)
+
     Vᵀ, new_input_dim = py"update_network"(onnx_input, onnx_output, box_constraints)
     A, b = get_A_b_from_box_alternating(box_constraints)
     A = A*transpose(Vᵀ)
@@ -18,7 +23,7 @@ function reduce(onnx_input, vnnlib_input, onnx_output, vnnlib_output, approx=1)
     py"create_vnnlib"(A_new, b_new, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
 end
 
-function reduce_network(onnx_input, vnnlib_input, onnx_output, V_output, dim_output)
+#=function reduce_network(onnx_input, vnnlib_input, onnx_output, V_output, dim_output)
     box_constraints, _ = get_box_constraints(vnnlib_input)
     Vᵀ, new_input_dim = py"update_network"(onnx_input, onnx_output, box_constraints)
    
@@ -39,6 +44,6 @@ function calculate_polytope(V_input, dim_input,vnnlib_input, vnnlib_output, appr
     A = A*transpose(Vᵀ)
     A_new, b_new = approximate(A, b, box_constraints, Vᵀ, new_input_dim, approx)
     py"create_vnnlib"(A_new, b_new, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
-end
+end=#
 
 end # module DimensionalityReduction
