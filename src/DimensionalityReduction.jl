@@ -21,6 +21,8 @@ function reduce(onnx_input, vnnlib_input, output, approx=1)
     A = A*transpose(Vᵀ)
     A_new, b_new = approximate(A, b, box_constraints, Vᵀ, new_input_dim, approx)
     py"create_vnnlib"(A_new, b_new, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
+    # constraints = approximate(A, b, box_constraints, Vᵀ, new_input_dim, approx)
+    # py"create_vnnlib_from_lower_upper_bound"(constraints, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
 end
 
 #=function reduce_network(onnx_input, vnnlib_input, onnx_output, V_output, dim_output)

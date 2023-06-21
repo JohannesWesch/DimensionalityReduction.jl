@@ -105,11 +105,12 @@ def create_vnnlib_from_lower_upper_bound(constraints, num_inputs, num_outputs, i
     script = SmtLibScript()
     create_input_variables(script, num_inputs)
     create_output_variables(script, num_outputs)
-    create_with_lower_upper_bounds(script, constraints)
+    # create_with_lower_upper_bounds(script, constraints)
     script.to_file(output_filename, daggify=False)
-
+    c = get_constraints_as_string(constraints)
     s = get_output_constraints(input_filename)
     with open(output_filename, 'a') as file:
+        file.write(c)
         file.write(s)
     calculate_fractions(output_filename)
 
@@ -122,6 +123,16 @@ def create_with_lower_upper_bounds(script, constraints):
         formula_ge = LE(x, Real(float(constraints[i][1])))
         declare_formula(script, formula_le)
         declare_formula(script, formula_ge)
+
+def get_constraints_as_string(input_bounds):
+    c = ""
+
+    for i in range(input_bounds.shape[0]):
+        c += f"(assert (<= X_{i} {input_bounds[i, 1]}))\n"
+        c += f"(assert (>= X_{i} {input_bounds[i, 0]}))\n"
+        c += "\n"
+    c += "\n"
+    return c
 
 class SmtLibCommand(namedtuple('SmtLibCommand', ['name', 'args'])):
     def serialize(self, outstream=None, printer=None, daggify=True):

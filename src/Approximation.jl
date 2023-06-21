@@ -5,6 +5,7 @@ include("Constraints.jl")
 
 function approximate(A, b, box_constraints, V, new_input_dim, approx)
     new_constraints = new_box_constraints(V, box_constraints)
+    # return new_constraints[1:new_input_dim, 1:2]
     A₁, b₁ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
     if approx == 1
         return A₁, b₁

@@ -1,6 +1,5 @@
 using VNNLib
 using PyCall
-include("PathGenerator.jl")
 
 @pyinclude("src/VNNLibConverter.py")
 
