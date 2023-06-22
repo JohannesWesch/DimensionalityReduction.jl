@@ -18,7 +18,7 @@ function reduce(onnx_input, vnnlib_input, output, approx=1)
 
     Vᵀ, new_input_dim = py"update_network"(onnx_input, onnx_output, box_constraints)
     A, b = get_A_b_from_box_alternating(box_constraints)
-    A = A*transpose(Vᵀ)
+    A = A * transpose(Vᵀ)
     A_new, b_new = approximate(A, b, box_constraints, Vᵀ, new_input_dim, approx)
     py"create_vnnlib"(A_new, b_new, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
     # constraints = approximate(A, b, box_constraints, Vᵀ, new_input_dim, approx)
