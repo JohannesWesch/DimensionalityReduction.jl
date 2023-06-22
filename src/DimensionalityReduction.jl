@@ -12,7 +12,7 @@ include("PathGenerator.jl")
 
 function reduce(onnx_input, vnnlib_input, output, approx=1)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
-    vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output)
+    vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
     box_constraints, output_dim = get_box_constraints(vnnlib_input, vnnlib_output)
 

@@ -12,9 +12,9 @@ function create_folder_path(onnx_input, vnnlib_input, output)
     return folder
 end
 
-function vnnlib_path(onnx_input, vnnlib_input, output)
+function vnnlib_path(onnx_input, vnnlib_input, output, approx)
     folder = create_folder_path(onnx_input, vnnlib_input, output)
-    return folder * "/" * split(vnnlib_input, "/")[end]
+    return folder * "/" * string(approx) * "_" * split(vnnlib_input, "/")[end]
 end
 
 function onnx_path(onnx_input, vnnlib_input, output)

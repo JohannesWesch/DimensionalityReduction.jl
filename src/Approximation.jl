@@ -11,10 +11,14 @@ function approximate(A, b, box_constraints, V, new_input_dim, approx)
         return A₁, b₁
     elseif approx == 2
         A₂, b₂ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
-        return vcat(A₁, A₂), vcat(b₁, b₂)
+        print(b₂)
+        # return vcat(A₁, A₂), vcat(b₁, b₂)
+        return A₂, b₂
     elseif approx == 3
         A₃, b₃ = approximate_new_dimensions(A, b, new_constraints, new_input_dim)
-        return vcat(A₁, A₃), vcat(b₁, b₃)
+        # return vcat(A₁, A₃), vcat(b₁, b₃)
+        print(b₃)
+        return A₃, b₃
     else
         throw(ArgumentError("parameter must be between 1 and 3"))
     end
@@ -48,15 +52,16 @@ end
 # similar to new_box_constraints, but this time we optimize the diretions of the new matrix A
 function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
     A_new = A[:, 1:new_input_dim]
-    b_new = zeros(size(A)[1], 2)
+    b_new = zeros(size(A)[1])
 
     A⁺ = max.(0, A)
     A⁻ = min.(0, A)
 
-    b_new[:,1] = A⁺ * new_constraints[:,1] + A⁻ * new_constraints[:,2]
-    b_new[:,2] = A⁺ * new_constraints[:,2] + A⁻ * new_constraints[:,1]
+    b_new = A⁺ * new_constraints[:, 2] + A⁻ * new_constraints[:, 1]
+    # b_new[:,1] = A⁺ * new_constraints[:,1] + A⁻ * new_constraints[:,2]
+    # b_new[:,2] = A⁺ * new_constraints[:,2] + A⁻ * new_constraints[:,1]
 
-    return vcat(A_new, A_new), vcat(b_new[:,1],  b_new[:,2] )
+    return A_new, b_new
 end
 
 
