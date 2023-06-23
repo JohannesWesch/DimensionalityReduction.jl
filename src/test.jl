@@ -33,22 +33,45 @@ A, b, Vᵀ, box_constraints, new_input_dim = reduce("benchmarks/mnistfc/mnist-ne
 b = vec(b)
 P = HPolytope(A, b)
 
+proj_mat = [[1. zeros(1, 783)]; [0. 1. zeros(1, 782)]; [0. 0. 1. zeros(1, 781)]; [0. 0. 0. zeros(1, 780) 1.]]
 
-#=d = A[1, 1:end]
-d[new_input_dim+1:end] .= 0.0
+print("hi")
 
-s = ρ(d, P)
-println(s)
-d = A[2, 1:end]
-d[new_input_dim+1:end] .= 0.0
-s = ρ(d, P)
-println(s)
-d = A[3, 1:end]
-d[new_input_dim+1:end] .= 0.0
-s = ρ(d, P)
-println(s)=#
+d1 = A[1, 1:end]
+d1[new_input_dim+1:end] .= 0.0
+d2 = A[2, 1:end]
+d2[new_input_dim+1:end] .= 0.0
+d3 = A[3, 1:end]
+d3[new_input_dim+1:end] .= 0.0
+d4 = A[4, 1:end]
+d4[new_input_dim+1:end] .= 0.0
 
-d = zeros(size(A, 2))
+dirs = CustomDirections([d1, d2, d3, d4]);
+res = Approximations.overapproximate(P, dirs)
+
+print(res)
+
+
+#=for i in 1:15
+    d = A[i, 1:end]
+    d[new_input_dim+1:end] .= 0.0
+    s = ρ(d, P)
+    println(s)
+end=#
+
+#=
+d1 = zeros(size(A, 2))
+d1[1] = -1
+d2 = zeros(size(A, 2))
+d2[1] = 1
+d3 = zeros(size(A, 2))
+d3[2] = -1
+d4 = zeros(size(A, 2))
+d4[2] = 1=#
+
+
+# support functions for the optimization of each variable at a time
+#=d = zeros(size(A, 2))
 d[1] = -1
 s = ρ(d, P)
 println(s)
@@ -76,7 +99,7 @@ println(s)
 d = zeros(size(A, 2))
 d[3] = 1
 s = ρ(d, P)
-println(s)
+println(s)=#
 
 
 
