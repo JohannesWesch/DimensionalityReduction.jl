@@ -109,7 +109,7 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 		return (result.result_str, result.total_stars, None)
 """
 		global run_nnenum = py"run_nnenum"
-	end
+end
 
 	export run_nnenum
 

@@ -6,9 +6,9 @@ include("NNEnum.jl")
 import .NNEnum: run_nnenum
 import .DimensionalityReduction: reduce
 
-#=reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
+reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
         "benchmarks/mnistfc/prop_3_0.03.vnnlib",
-        "benchmarks/mnistfc_reduced", 4)=#
+        "benchmarks/mnistfc_reduced", 1)
 
 # "benchmarks/mnistfc_reduced/mnist-net_256x4_updated.onnx",
 # "benchmarks/mnistfc_reduced/prop_0_0.03_updated.vnnlib"
@@ -26,7 +26,7 @@ import .DimensionalityReduction: reduce
 
 # f, n_input, n_output = get_ast("benchmarks/mnistfc_reduced/mnist-net_256x4/prop_0_0.03/prop_0_0.03.vnnlib")
 
-using LazySets
+#=using LazySets
 using PyCall
 using VNNLib
 using Polyhedra
@@ -70,5 +70,4 @@ println(size(b))
 out = create_output_matrix("benchmarks/mnistfc/prop_3_0.03.vnnlib")
 run_nnenum("benchmarks/mnistfc_reduced/mnist-net_256x2/prop_3_0.03/mnist-net_256x2.onnx",
  box_constraints[1:new_input_dim, 1], box_constraints[1:new_input_dim, 2], A, b[:,1], out)
-
- # test
+ =#

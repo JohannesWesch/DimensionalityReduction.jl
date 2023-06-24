@@ -1,3 +1,4 @@
+py"""
 def get_input_constraints(vnnlib_file):
     s = ""
     with open(vnnlib_file, 'r') as file:
@@ -7,3 +8,7 @@ def get_input_constraints(vnnlib_file):
             s += line
            
     return s
+
+"""
+
+global get_input_constraints = py"get_input_constraints"
