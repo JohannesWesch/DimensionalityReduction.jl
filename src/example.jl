@@ -8,7 +8,7 @@ import .DimensionalityReduction: reduce
 
 reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
         "benchmarks/mnistfc/prop_4_0.03.vnnlib",
-        "benchmarks/mnistfc_reduced", 1)
+        "benchmarks/mnistfc_reduced", 1, true)
 
 # "benchmarks/mnistfc_reduced/mnist-net_256x4_updated.onnx",
 # "benchmarks/mnistfc_reduced/prop_0_0.03_updated.vnnlib"

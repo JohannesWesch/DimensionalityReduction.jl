@@ -4,30 +4,30 @@ using Base.Threads
 
 include("Constraints.jl")
 
-function approximate(A, b, box_constraints, V, new_input_dim, approx)
-    new_constraints = new_box_constraints(V, box_constraints)
-    # return new_constraints[1:new_input_dim, 1:2]
-    A₁, b₁ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
+function approximate(A, b, new_constraints, new_input_dim, approx, run_nnenum)
+    global A_new = [] 
+    global b_new = []
     if approx == 1
-        return A₁, b₁, new_constraints # delete new_constraints
+        A₁, b₁ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
+        A_new, b_new = A₁, b₁
     elseif approx == 2
-        A₂, b₂ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
-        print(b₂)
-        # return vcat(A₁, A₂), vcat(b₁, b₂)
-        return A₂, b₂
+        A₂, b₂ = approximate_new_dimensions(A, b, new_constraints, new_input_dim)
+        A_new, b_new = A₂, b₂
     elseif approx == 3
-        A₃, b₃ = approximate_new_dimensions(A, b, new_constraints, new_input_dim)
-        # return vcat(A₁, A₃), vcat(b₁, b₃)
-        print(b₃)
-        return A₃, b₃
-    elseif approx == 4
-        A₄, b₄ = approximate_support_function(A, b, new_input_dim)
-        print(b₄)
-        return A₄, b₄
+        A₃, b₃ = approximate_support_function(A, b, new_input_dim)
+        A_new, b_new = A₃, b₃
     else
-        throw(ArgumentError("parameter must be between 1 and 4"))
+        # throw(ArgumentError("parameter must be between 1 and 3"))
     end
-    
+
+    if run_nnenum
+        # change this
+        A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
+        return vcat(A₀, A_new), vcat(b₀, b_new)
+    else
+        A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
+        return vcat(A₀, A_new), vcat(b₀, b_new)
+    end
 end
 
 # apply V on the old bounds to get bounds for the new ̃x
