@@ -1,0 +1,3 @@
+[submodule "nnenum"]
+	path = nnenum
+	url = https://github.com/stanleybak/nnenum.git
