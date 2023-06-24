@@ -1,7 +1,7 @@
 using VNNLib
 using PyCall
 
-include("VNNLibConverter.jl")
+include("Utils.jl")
 
 function get_box_constraints(vnnlib_file, vnnlib_output)
     convert_vnnlib(vnnlib_file, vnnlib_output)

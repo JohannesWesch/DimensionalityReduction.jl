@@ -1,3 +1,4 @@
+py"""
 from pysmt.shortcuts import Symbol, LE, Plus, Real, Times, GE
 from pysmt.typing import REAL
 from pysmt.smtlib.commands import DECLARE_CONST, ASSERT
@@ -80,15 +81,7 @@ def create_output_variables(script, num_outputs):
 
 
 def create_vnnlib(c, d, num_inputs, num_outputs, input_filename, output_filename):
-    """creates a vnnlib file from the given constraints
-
-    :param c: formatted date to display
-    :param d:
-    :param num_inputs: priority number
-    :param num_outputs:
-    :param input_filename:
-    :param output_filename: path were the new vnnlib file is stored
-    """
+    
     script = SmtLibScript()
     create_input_variables(script, num_inputs)
     create_output_variables(script, num_outputs)
@@ -136,15 +129,6 @@ def get_constraints_as_string(input_bounds):
 
 class SmtLibCommand(namedtuple('SmtLibCommand', ['name', 'args'])):
     def serialize(self, outstream=None, printer=None, daggify=True):
-        """Serializes the SmtLibCommand into outstream using the given printer.
-
-        Exactly one of outstream or printer must be specified. When
-        specifying the printer, the associated outstream will be used.
-        If printer is not specified, daggify controls the printer to
-        be created. If true a daggified formula is produced, otherwise
-        a tree printing is done.
-
-        """
 
         if (outstream is None) and (printer is not None):
             outstream = printer.stream
@@ -226,4 +210,8 @@ class SmtLibCommand(namedtuple('SmtLibCommand', ['name', 'args'])):
                                       "Please open a bug-report." % self.name)
         else:
             raise UnknownSmtLibCommandError(self.name)
+
+"""
+
+global create_vnnlib = py"create_vnnlib"
 

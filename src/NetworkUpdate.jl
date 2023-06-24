@@ -1,3 +1,4 @@
+py"""
 import numpy as np
 import onnx
 
@@ -95,3 +96,7 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
 
     onnx.save(model, onnx_output_filename)
     return v, new_input_dim
+
+"""
+
+global update_network = py"update_network"
