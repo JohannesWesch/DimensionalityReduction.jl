@@ -9,7 +9,7 @@ function approximate(A, b, box_constraints, V, new_input_dim, approx)
     # return new_constraints[1:new_input_dim, 1:2]
     A₁, b₁ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
     if approx == 1
-        return A₁, b₁
+        return A₁, b₁, new_constraints # delete new_constraints
     elseif approx == 2
         A₂, b₂ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
         print(b₂)
