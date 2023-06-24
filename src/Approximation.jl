@@ -16,14 +16,17 @@ function approximate(A, b, new_constraints, new_input_dim, approx, run_nnenum)
     elseif approx == 3
         A₃, b₃ = approximate_support_function(A, b, new_input_dim)
         A_new, b_new = A₃, b₃
+    elseif approx == 4
+        A₁, b₁ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
+        A₂, b₂ = approximate_new_dimensions(A, b, new_constraints, new_input_dim)
+        A_new = vcat(A₁, A₂)
+        b_new = vcat(b₁, b₂)
     else
         # throw(ArgumentError("parameter must be between 1 and 3"))
     end
 
     if run_nnenum
-        # change this
-        A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
-        return vcat(A₀, A_new), vcat(b₀, b_new)
+        return return A_new, b_new
     else
         A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
         return vcat(A₀, A_new), vcat(b₀, b_new)
@@ -74,18 +77,23 @@ function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
 end
 
 function approximate_support_function(A, b, new_input_dim)
-    A_new = A[:, 1:new_input_dim]
+    j = 10
+    A_new = A[1:j, 1:new_input_dim]
 
     b = vec(b)
     P = HPolytope(A, b)
-    b_new = zeros(size(b))
+    b_new = zeros(j,)
 
-    for i in 1:3 # size(A, 1)
+    println("starting")
+    println(j)
+    for i in 1:j # size(A, 1)
+        println(i)
         d = A[i, 1:end]
         d[new_input_dim + 1:end] .= 0.0
         s = ρ(d, P)
         b_new[i] = s
     end
+    println(size(A_new), size(b_new))
     return A_new, b_new
 end
 
