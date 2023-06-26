@@ -11,22 +11,23 @@ import .DimensionalityReduction: reduce
 
 reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
         "benchmarks/mnistfc/prop_0_0.03.vnnlib",
-        "benchmarks/mnistfc_reduced", 0, true, false)
+        "benchmarks/mnistfc_reduced", 0, false, true)
 
-
-#=onnx_input = "benchmarks/mnistfc/mnist-net_256x2.onnx"
-vnnlib_input = "benchmarks/mnistfc/prop_0_0.05.vnnlib"
+#=
+onnx_input = "benchmarks/mnistfc/mnist-net_256x2.onnx"
+vnnlib_input = "benchmarks/mnistfc/prop_2_0.03.vnnlib"
 output = "benchmarks/mnistfc_reduced"
-approx = 1
+approx = 0
 
 onnx_output = onnx_path(onnx_input, vnnlib_input, output)
 vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
-box_constraints, output_dim = get_box_constraints(vnnlib_input, vnnlib_output)
+box_constraints, output_dim = get_box_constraints(vnnlib_input)
 
 A, b = get_A_b_from_box_alternating(box_constraints)
 
 out = create_output_matrix(vnnlib_input)
+
 run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], A, b[:, 1], out)=#
 
 

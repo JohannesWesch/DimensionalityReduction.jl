@@ -10,14 +10,14 @@ using BenchmarkTools
 include("Constraints.jl")
 include("Approximation.jl")
 include("PathGenerator.jl")
-@pyinclude("src/NetworkUpdate.py")
-@pyinclude("src/VNNLibGenerator.py")
+include("NetworkUpdate.jl")
+include("VNNLibGenerator.jl")
 
 function reduce(onnx_input, vnnlib_input, output, approx=1)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
-    box_constraints, output_dim = get_box_constraints(vnnlib_input, vnnlib_output)
+    box_constraints, output_dim = get_box_constraints(vnnlib_input)
 
     Vᵀ, new_input_dim = py"update_network"(onnx_input, onnx_output, box_constraints)
     
@@ -27,13 +27,43 @@ function reduce(onnx_input, vnnlib_input, output, approx=1)
 end
 
 A, b, Vᵀ, box_constraints, new_input_dim = reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
-        "benchmarks/mnistfc/prop_3_0.03.vnnlib",
+        "benchmarks/mnistfc/prop_0_0.03.vnnlib",
         "benchmarks/mnistfc_reduced", 3)
 
 b = vec(b)
 P = HPolytope(A, b)
 
-proj_mat = [[1. zeros(1, 783)]; [0. 1. zeros(1, 782)]; [0. 0. 1. zeros(1, 781)]; [0. 0. 0. zeros(1, 780) 1.]]
+d = zeros(size(A, 2))
+d[1] = -1
+s = ρ(d, P)
+println(s)
+
+d = zeros(size(A, 2))
+d[1] = 1
+s = ρ(d, P)
+println(s)
+
+d = zeros(size(A, 2))
+d[2] = -1
+s = ρ(d, P)
+println(s)
+
+d = zeros(size(A, 2))
+d[2] = 1
+s = ρ(d, P)
+println(s)
+
+d = zeros(size(A, 2))
+d[3] = -1
+s = ρ(d, P)
+println(s)
+
+d = zeros(size(A, 2))
+d[3] = 1
+s = ρ(d, P)
+println(s)
+
+#=proj_mat = [[1. zeros(1, 783)]; [0. 1. zeros(1, 782)]; [0. 0. 1. zeros(1, 781)]; [0. 0. 0. zeros(1, 780) 1.]]
 
 print("hi")
 
@@ -49,7 +79,7 @@ d4[new_input_dim+1:end] .= 0.0
 dirs = CustomDirections([d1, d2, d3, d4]);
 res = Approximations.overapproximate(P, dirs)
 
-print(res)
+print(res)=#
 
 
 #=for i in 1:15
