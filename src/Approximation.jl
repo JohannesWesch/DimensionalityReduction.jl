@@ -7,7 +7,9 @@ include("Constraints.jl")
 function approximate(A, b, new_constraints, new_input_dim, approx)
     global A_new = [] 
     global b_new = []
-    if approx == 1
+    if approx == 0
+        A_new, b_new = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
+    elseif approx == 1
         A₁, b₁ = approximate_other_dimensions(A, b, new_constraints, new_input_dim)
         A_new, b_new = A₁, b₁
     elseif approx == 2
@@ -74,7 +76,7 @@ function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
 end
 
 function approximate_support_function(A, b, new_input_dim)
-    j = 6
+    j = new_input_dim
     A_new = A[1:j, 1:new_input_dim]
 
     b = vec(b)
