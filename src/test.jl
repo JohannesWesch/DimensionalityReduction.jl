@@ -33,35 +33,20 @@ A, b, Vᵀ, box_constraints, new_input_dim = reduce("benchmarks/mnistfc/mnist-ne
 b = vec(b)
 P = HPolytope(A, b)
 
-d = zeros(size(A, 2))
-d[1] = -1
-s = ρ(d, P)
-println(s)
+directions = Vector{Float64}[]
 
-d = zeros(size(A, 2))
-d[1] = 1
-s = ρ(d, P)
-println(s)
+for i in 1:14
+    d = A[i, 1:end]
+    d[new_input_dim+1:end] .= 0.0
+    push!(directions, d)
+end
 
-d = zeros(size(A, 2))
-d[2] = -1
-s = ρ(d, P)
-println(s)
+dirs = CustomDirections(directions);
 
-d = zeros(size(A, 2))
-d[2] = 1
-s = ρ(d, P)
-println(s)
+# dirs = CustomDirections(dir);
+res = Approximations.overapproximate(P, dirs)
 
-d = zeros(size(A, 2))
-d[3] = -1
-s = ρ(d, P)
-println(s)
-
-d = zeros(size(A, 2))
-d[3] = 1
-s = ρ(d, P)
-println(s)
+println(res)
 
 #=proj_mat = [[1. zeros(1, 783)]; [0. 1. zeros(1, 782)]; [0. 0. 1. zeros(1, 781)]; [0. 0. 0. zeros(1, 780) 1.]]
 

@@ -76,7 +76,7 @@ function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
 end
 
 function approximate_support_function(A, b, new_input_dim)
-    j = new_input_dim
+    j = 4
     A_new = A[1:j, 1:new_input_dim]
 
     b = vec(b)
@@ -92,7 +92,6 @@ function approximate_support_function(A, b, new_input_dim)
         s = ρ(d, P)
         b_new[i] = s
     end
-    println(size(A_new), size(b_new))
     return A_new, b_new
 end
 
