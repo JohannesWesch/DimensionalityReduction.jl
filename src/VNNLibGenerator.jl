@@ -214,4 +214,4 @@ class SmtLibCommand(namedtuple('SmtLibCommand', ['name', 'args'])):
 """
 
 global create_vnnlib = py"create_vnnlib"
-
+global create_vnnlib_from_lower_upper_bound = py"create_vnnlib_from_lower_upper_bound"

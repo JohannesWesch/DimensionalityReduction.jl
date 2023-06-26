@@ -3,10 +3,12 @@ using PyCall
 
 include("Utils.jl")
 
-function get_box_constraints(vnnlib_file, vnnlib_output)
-    convert_vnnlib(vnnlib_file, vnnlib_output)
+global read_buffer = "read_buffer.vnnlib"
+
+function get_box_constraints(vnnlib_file)
+    convert_vnnlib(vnnlib_file, read_buffer)
     
-    f, n_input, n_output = get_ast(vnnlib_output)
+    f, n_input, n_output = get_ast(read_buffer)
     global b = []
     
     for (bounds, _, _, _) in f

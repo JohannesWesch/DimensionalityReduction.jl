@@ -4,7 +4,7 @@ using Base.Threads
 
 include("Constraints.jl")
 
-function approximate(A, b, new_constraints, new_input_dim, approx, run_nnenum)
+function approximate(A, b, new_constraints, new_input_dim, approx)
     global A_new = [] 
     global b_new = []
     if approx == 1
@@ -25,12 +25,9 @@ function approximate(A, b, new_constraints, new_input_dim, approx, run_nnenum)
         # throw(ArgumentError("parameter must be between 1 and 3"))
     end
 
-    if run_nnenum
-        return return A_new, b_new
-    else
-        A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
-        return vcat(A₀, A_new), vcat(b₀, b_new)
-    end
+    return A_new, b_new
+    # A₀, b₀ = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
+    # return vcat(A₀, A_new), vcat(b₀, b_new)
 end
 
 # apply V on the old bounds to get bounds for the new ̃x
