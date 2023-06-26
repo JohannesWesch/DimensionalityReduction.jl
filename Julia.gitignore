@@ -23,4 +23,5 @@ docs/site/
 # environment.
 Manifest.toml
 
-./read_buffer.vnnlib
+*.vnnlib
+*.onnx
