@@ -76,20 +76,23 @@ function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
 end
 
 function approximate_support_function(A, b, new_input_dim)
-    j = 4
+    j = size(A, 1)
     A_new = A[1:j, 1:new_input_dim]
 
     b = vec(b)
     P = HPolytope(A, b)
     b_new = zeros(j,)
 
-    println("starting")
+    println("starting approximation")
     println(j)
-    for i in 1:j # size(A, 1)
+
+    # Threads.@threads 
+    # println(i, ", thread: ", Threads.threadid())
+    Threads.@threads for i in 1:j
         println(i)
         d = A[i, 1:end]
         d[new_input_dim + 1:end] .= 0.0
-        s = ρ(d, P)
+        s = ρ(d, P, solver = Gurobi.Optimizer)
         b_new[i] = s
     end
     return A_new, b_new

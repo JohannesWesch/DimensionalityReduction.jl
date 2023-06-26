@@ -3,6 +3,7 @@ using PyCall
 using VNNLib
 using Polyhedra
 using CDDLib
+using JuMP, GLPK, Gurobi
 
 using LazySets.Arrays: SingleEntryVector
 using BenchmarkTools
@@ -26,6 +27,10 @@ function reduce(onnx_input, vnnlib_input, output, approx=1)
     return A, b, Vᵀ, box_constraints, new_input_dim
 end
 
+function default_lp_solver(::Type{<:AbstractFloat})
+    return JuMP.optimizer_with_attributes(() -> GLPK.Optimizer(; method=GLPK.SIMPLEX))
+end
+
 A, b, Vᵀ, box_constraints, new_input_dim = reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
         "benchmarks/mnistfc/prop_0_0.03.vnnlib",
         "benchmarks/mnistfc_reduced", 3)
@@ -33,7 +38,16 @@ A, b, Vᵀ, box_constraints, new_input_dim = reduce("benchmarks/mnistfc/mnist-ne
 b = vec(b)
 P = HPolytope(A, b)
 
-directions = Vector{Float64}[]
+# MathOptInterface.OptimizerWithAttributes(LazySets.var"#12#13"(), Pair{MathOptInterface.AbstractOptimizerAttribute, Any}[])
+# JuMP.optimizer_with_attributes(() -> GLPK.Optimizer(; method=GLPK.SIMPLEX))
+
+d = A[1, 1:end]
+d[new_input_dim+1:end] .= 0.0
+s = ρ(d, P, solver = Gurobi.Optimizer)
+println(s)
+
+
+#=directions = Vector{Float64}[]
 
 for i in 1:14
     d = A[i, 1:end]
@@ -41,12 +55,11 @@ for i in 1:14
     push!(directions, d)
 end
 
-dirs = CustomDirections(directions);
+dirs = CustomDirections(directions)
 
-# dirs = CustomDirections(dir);
 res = Approximations.overapproximate(P, dirs)
 
-println(res)
+println(res)=#
 
 #=proj_mat = [[1. zeros(1, 783)]; [0. 1. zeros(1, 782)]; [0. 0. 1. zeros(1, 781)]; [0. 0. 0. zeros(1, 780) 1.]]
 
