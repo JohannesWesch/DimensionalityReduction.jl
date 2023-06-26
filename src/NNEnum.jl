@@ -49,21 +49,39 @@ def prepare_star(star):
 	)
 
 def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
-	Settings.UNDERFLOW_BEHAVIOR = "warn"
+	# Settings.UNDERFLOW_BEHAVIOR = "warn"
 	# TODO(steuber): Seem to have numerical issue here?
-	Settings.SKIP_CONSTRAINT_NORMALIZATION = False
-	Settings.PRINT_PROGRESS = True
-	Settings.PRINT_OUTPUT = True
-	#Settings.RESULT_SAVE_COUNTER_STARS = True
-	#Settings.INPUT_SPACE_MINIMIZATION = False
-	#??
-	Settings.FIND_CONCRETE_COUNTEREXAMPLES = True
-	Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
-	Settings.NUM_PROCESSES = 0
+	# Settings.SKIP_CONSTRAINT_NORMALIZATION = False
+	# Settings.PRINT_PROGRESS = True
+	# Settings.PRINT_OUTPUT = True
+	# #Settings.RESULT_SAVE_COUNTER_STARS = True
+	# #Settings.INPUT_SPACE_MINIMIZATION = False
+	# #??
+	# Settings.FIND_CONCRETE_COUNTEREXAMPLES = True
+	# Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
+	# Settings.NUM_PROCESSES = 0
 	#Settings.CHECK_SINGLE_THREAD_BLAS = False
 	#Settings.TRY_QUICK_OVERAPPROX = False
 	#Settings.SINGLE_SET = False
-	
+
+	Settings.NUM_PROCESSES = 0
+	Settings.TIMING_STATS = False
+	Settings.PARALLEL_ROOT_LP = False
+	Settings.SPLIT_IF_IDLE = False
+	Settings.PRINT_OVERAPPROX_OUTPUT = False
+	Settings.TRY_QUICK_OVERAPPROX = True
+
+	Settings.CONTRACT_ZONOTOPE_LP = True
+	Settings.CONTRACT_LP_OPTIMIZED = True
+	Settings.CONTRACT_LP_TRACK_WITNESSES = True
+
+	Settings.OVERAPPROX_BOTH_BOUNDS = False
+
+	Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
+	Settings.OVERAPPROX_GEN_LIMIT_MULTIPLIER = 1.5
+	Settings.OVERAPPROX_LP_TIMEOUT = 0.02
+	Settings.OVERAPPROX_MIN_GEN_LIMIT = 70
+
 	network = load_onnx_network(model)
 	ninputs = A_input.shape[1]
 
@@ -88,7 +106,7 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 	spec = DisjunctiveSpec(spec_list)
 
 	print("[NNENUM] Enumeration in progress... ")
-	result = next(enumerate_network(init_star, network, spec))
+	result = enumerate_network(init_star, network, spec)
 	print("\n[NNENUM] Result: ")
 	print(result)
 	print("[NNENUM] Enumeration finished.")

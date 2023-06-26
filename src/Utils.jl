@@ -21,7 +21,12 @@ function create_output_matrix(vnnlib)
             end
         end
     end
-    return [(matrix, vector)]
+
+    disjunctions = []
+    for i in 1:9
+        push!(disjunctions, (matrix[i:i,1:end], [0]))
+    end
+    return disjunctions
 end
 
 py"""
