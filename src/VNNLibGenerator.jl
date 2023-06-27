@@ -18,13 +18,13 @@ def create_constraints(script, c, d):
     num_variables = c.shape[1]
 
     for i in range(num_constraints):
-        times = []
+        times = [Times((Real(0.0)), Symbol(f"X_0", typename=REAL))]
         plus = {}
         for j in range(num_variables):
             if not (math.isclose(c[i][j], 0, rel_tol=1e-5)):
                 x = Symbol(f"X_{j}", typename=REAL)
                 times.append(Times(Real(float(c[i][j])), x))
-                plus = Plus(times)
+        plus = Plus(times)
 
         le = LE(plus, Real(float(d[i])))
         declare_formula(script, le)

@@ -18,13 +18,13 @@ function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
     box_constraints, output_dim = get_box_constraints(vnnlib_input)
-    Vᵀ, new_input_dim = update_network(onnx_input, onnx_output, box_constraints)
+    U, new_input_dim = update(onnx_input, onnx_output, box_constraints)
 
     A, b = get_A_b_from_box_alternating(box_constraints)
-    A = A * transpose(Vᵀ)
-    # A = A * inv(Vᵀ)
+    # A = A * transpose(Vᵀ)
+    A = A * inv(U)
 
-    new_constraints = new_box_constraints(Vᵀ, box_constraints)
+    new_constraints = new_box_constraints(U, box_constraints)
     A_new, b_new = approximate(A, b, new_constraints, new_input_dim, approx)
 
     if nnenum && approx == 0

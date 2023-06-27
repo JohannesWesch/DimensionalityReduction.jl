@@ -1,3 +1,6 @@
+using LinearAlgebra
+using PyCall
+
 py"""
 import numpy as np
 import onnx
@@ -66,7 +69,7 @@ def compact_svd(weights):
     s = np.diagflat(s)
     return u, s, v
 
-def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
+def update_network(onnx_input_filename, onnx_output_filename, box_constraints, l):
     # load network
     model = onnx.load(onnx_input_filename)
 
@@ -74,21 +77,13 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
     w = onnx.numpy_helper.to_array(init)
     w = remove_zero_activation_weights(w, box_constraints)
 
-    u, s, v = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
-
-    # lu decomposition
-    # new_input_dim = s.shape[1]
-
-    # l, r = lu(v, permute_l=True)
-
-    # l = np.delete(l, np.s_[new_input_dim:], 0)
-    # l = np.delete(l, np.s_[new_input_dim:], 1)
+    u, s, _ = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
 
     # weight update
     name = model.graph.initializer[1].name
 
     new_weights = np.matmul(u, s)
-    # new_weights = np.matmul(new_weights, l) # only by LU-Decomposition
+    new_weights = np.matmul(new_weights, l) # only by LU-Decomposition
     tensor = onnx.numpy_helper.from_array(new_weights)
 
     model.graph.initializer[1].CopyFrom(tensor)
@@ -105,8 +100,27 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints):
             dim.dim_value = new_input_dim
 
     onnx.save(model, onnx_output_filename)
-    return v, new_input_dim
+    return # v, new_input_dim
 
+def get_v(onnx_input_filename, onnx_output_filename, box_constraints):
+    model = onnx.load(onnx_input_filename)
+
+    init = model.graph.initializer[1] # get first weight matrix
+    w = onnx.numpy_helper.to_array(init)
+    w = remove_zero_activation_weights(w, box_constraints)
+
+    u, s, v = compact_svd(w)
+    new_input_dim = s.shape[1]
+    return v, new_input_dim
 """
 
+global get_v = py"get_v"
 global update_network = py"update_network"
+
+function update(onnx_input_filename, onnx_output_filename, box_constraints)
+    v, new_input_dim = get_v(onnx_input_filename, onnx_output_filename, box_constraints)
+    F = lu(v)
+    l = F.L[1:new_input_dim, 1:new_input_dim]
+    update_network(onnx_input_filename, onnx_output_filename, box_constraints, l)
+    return F.U * F.P, new_input_dim
+end

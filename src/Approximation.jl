@@ -76,7 +76,7 @@ function approximate_new_dimensions(A, b, new_constraints, new_input_dim)
 end
 
 function approximate_support_function(A, b, new_input_dim)
-    j = size(A, 1)
+    j = 100 # size(A, 1)
     A_new = A[1:j, 1:new_input_dim]
 
     b = vec(b)
