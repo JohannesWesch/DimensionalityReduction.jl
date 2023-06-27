@@ -90,6 +90,8 @@ function approximate_support_function(A, b, new_input_dim)
     # println(i, ", thread: ", Threads.threadid())
     Threads.@threads for i in 1:j
         println(i)
+        # d = zeros(size(A, 2))
+        # d[i] = -1
         d = A[i, 1:end]
         d[new_input_dim + 1:end] .= 0.0
         s = ρ(d, P, solver = Gurobi.Optimizer)

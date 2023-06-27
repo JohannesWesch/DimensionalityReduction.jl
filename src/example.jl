@@ -10,7 +10,7 @@ import .NNEnum: run_nnenum
 import .DimensionalityReduction: reduce
 
 reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
-        "benchmarks/mnistfc/prop_6_0.03.vnnlib",
+        "benchmarks/mnistfc/prop_0_0.03.vnnlib",
         "benchmarks/mnistfc_reduced", 3, true, true)
 
 #=
