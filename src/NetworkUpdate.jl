@@ -1,5 +1,6 @@
 using LinearAlgebra
 using PyCall
+include("Svd.jl")
 
 py"""
 import numpy as np
@@ -57,33 +58,20 @@ def get_num_inputs_outputs(model):
 
     return num_inputs, num_outputs
 
-def compact_svd(weights):
 
-    u, s, v = np.linalg.svd(weights)
-    s = s.round(10)
-    s = s[s != 0]
-    new_input_dim = s.size
-    u = np.delete(u, np.s_[new_input_dim:], 1)
-    # v = np.delete(v, np.s_[new_input_dim:], 0)
 
-    s = np.diagflat(s)
-    return u, s, v
-
-def update_network(onnx_input_filename, onnx_output_filename, box_constraints, l):
+def update_network(onnx_input_filename, onnx_output_filename, new_weights):
+    print(new_weights.shape)
     # load network
     model = onnx.load(onnx_input_filename)
 
-    init = model.graph.initializer[1] # get first weight matrix
-    w = onnx.numpy_helper.to_array(init)
-    w = remove_zero_activation_weights(w, box_constraints)
-
-    u, s, _ = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
-
     # weight update
+    #new_weights = np.matmul(A, B)
+    #new_weights = np.matmul(new_weights, C)
     name = model.graph.initializer[1].name
+    new_weights = new_weights.astype(np.single)
 
-    new_weights = np.matmul(u, s)
-    new_weights = np.matmul(new_weights, l) # only by LU-Decomposition
+    # new_weights = new_weights.astype(np.double)
     tensor = onnx.numpy_helper.from_array(new_weights)
 
     model.graph.initializer[1].CopyFrom(tensor)
@@ -100,27 +88,70 @@ def update_network(onnx_input_filename, onnx_output_filename, box_constraints, l
             dim.dim_value = new_input_dim
 
     onnx.save(model, onnx_output_filename)
-    return # v, new_input_dim
+    return
 
-def get_v(onnx_input_filename, onnx_output_filename, box_constraints):
+def get_w(onnx_input_filename, onnx_output_filename, box_constraints):
     model = onnx.load(onnx_input_filename)
 
     init = model.graph.initializer[1] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
     w = remove_zero_activation_weights(w, box_constraints)
 
-    u, s, v = compact_svd(w)
-    new_input_dim = s.shape[1]
-    return v, new_input_dim
+    return w
 """
 
-global get_v = py"get_v"
+global get_w = py"get_w"
 global update_network = py"update_network"
 
-function update(onnx_input_filename, onnx_output_filename, box_constraints)
-    v, new_input_dim = get_v(onnx_input_filename, onnx_output_filename, box_constraints)
-    F = lu(v)
-    l = F.L[1:new_input_dim, 1:new_input_dim]
-    update_network(onnx_input_filename, onnx_output_filename, box_constraints, l)
-    return F.U * F.P, new_input_dim
+function permute_variables(U)
+    d = size(U, 1)
+    Pᵣ = zeros(d, d)
+    for i = reverse(1:d)
+        for j in 1:d
+            if(i+j == d+1)
+                Pᵣ[j, i] = 1
+            end
+        end
+    end
+    return U * Pᵣ
 end
+
+function update(onnx_input_filename, onnx_output_filename, box_constraints)
+    w = get_w(onnx_input_filename, onnx_output_filename, box_constraints)
+    # [1 2 3 4 5; 6 7 8 9 10; 1 2 3 4 5; 6 7 8 9 10]
+    #get_w(onnx_input_filename, onnx_output_filename, box_constraints)
+    U, Σ, Vᵀ = decompose(w)
+
+    new_input_dim = size(Σ, 1)
+    Σ = Σ[1:new_input_dim, 1:new_input_dim]
+    F = lu(Vᵀ)
+    I = inv(F.U * F.P)
+    
+    display(U * Σ * F.L[1:new_input_dim, 1:new_input_dim])
+    update_network(onnx_input_filename, onnx_output_filename, U * Σ * F.L[1:new_input_dim, 1:new_input_dim])
+    return I, new_input_dim
+end
+
+#=
+def compact_svd(weights):
+
+    u, s, v = np.linalg.svd(weights)
+    s = s.round(10)
+    s = s[s != 0]
+    new_input_dim = s.size
+    u = np.delete(u, np.s_[new_input_dim:], 1)
+    # v = np.delete(v, np.s_[new_input_dim:], 0)
+
+    s = np.diagflat(s)
+    return u, s, v
+
+
+     init = model.graph.initializer[1] # get first weight matrix
+    w = onnx.numpy_helper.to_array(init)
+    w = remove_zero_activation_weights(w, box_constraints)
+
+    u, s, _ = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
+
+    new_weights = np.matmul(u, s)
+    new_weights = np.matmul(new_weights, l) # only by LU-Decomposition
+=#

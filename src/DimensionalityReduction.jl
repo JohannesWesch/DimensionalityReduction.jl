@@ -3,9 +3,13 @@ module DimensionalityReduction
 export reduce
 
 using PyCall
+using Polyhedra
+using CDDLib
+using Gurobi
 using DelimitedFiles
 include("Constraints.jl")
 include("Approximation.jl")
+include("Exact.jl")
 include("PathGenerator.jl")
 include("NetworkUpdate.jl")
 include("VNNLibGenerator.jl")
@@ -18,14 +22,16 @@ function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
     box_constraints, output_dim = get_box_constraints(vnnlib_input)
-    U, new_input_dim = update(onnx_input, onnx_output, box_constraints)
+    I, new_input_dim = update(onnx_input, onnx_output, box_constraints)
 
     A, b = get_A_b_from_box_alternating(box_constraints)
     # A = A * transpose(Vᵀ)
-    A = A * inv(U)
+    P = permute_variables(I)
+    A = A * P
 
-    new_constraints = new_box_constraints(U, box_constraints)
-    A_new, b_new = approximate(A, b, new_constraints, new_input_dim, approx)
+    new_constraints = new_box_constraints(I, box_constraints)
+    # A_new, b_new = approximate(A, b, new_constraints, new_input_dim, approx)
+    A_new, b_new = exact(A, b, new_input_dim)
 
     if nnenum && approx == 0
         out = create_output_matrix(vnnlib_input)
