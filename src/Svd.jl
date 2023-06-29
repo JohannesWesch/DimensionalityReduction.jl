@@ -24,10 +24,11 @@ function decompose(w)
             end
         end
     end
+    
     Pᵣ = zeros(d₂, d₂)
-    for i = reverse(1:d₁) # 1:d₂-1
-        for j in 1:d₁ # 1:d₂-1
-            if (i+j == d₁+1) #d2
+    for i = reverse(1:d₁)
+        for j in 1:d₁
+            if (i+j == d₁+1)
                 Pᵣ[j, i] = 1
             end
         end
@@ -50,5 +51,15 @@ function decompose(w)
     return Uₚ, Σₚ, Vᵀₚ
 end
 
-#w = [1 2 3 4; 5 6 7 8; 9 10 11 12]
-#decompose(w)
+function permute_variables(U)
+    d = size(U, 1)
+    Pᵣ = zeros(d, d)
+    for i = reverse(1:d)
+        for j in 1:d
+            if(i+j == d+1)
+                Pᵣ[j, i] = 1
+            end
+        end
+    end
+    return U * Pᵣ
+end

@@ -1,6 +1,6 @@
 using PyCall
 
-function create_output_matrix(vnnlib)
+function create_output_matrix(vnnlib, n_output)
     global property = 0
     open(vnnlib) do io
         firstline = readline(io) # throw out the first line
@@ -8,12 +8,12 @@ function create_output_matrix(vnnlib)
     end
 
     property += 1
-    matrix = zeros(9,10)
-    vector = zeros(9,)
+    matrix = zeros(n_output - 1,n_output)
+    vector = zeros(n_output - 1,)
     matrix[:, property] .= 1
     
-    for i in 1:9
-        for j in 1:10
+    for i in 1:n_output - 1
+        for j in 1:n_output
             if j < property && i == j
                 matrix[i, j] = -1
             elseif j > property && (i + 1) == j
@@ -23,7 +23,7 @@ function create_output_matrix(vnnlib)
     end
 
     disjunctions = []
-    for i in 1:9
+    for i in 1:n_output - 1
         push!(disjunctions, (matrix[i:i,1:end], [0]))
     end
     return disjunctions
