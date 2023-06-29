@@ -58,7 +58,6 @@ def get_num_inputs_outputs(model):
 
 
 def update_network(onnx_input_filename, onnx_output_filename, new_weights):
-    print(new_weights.shape)
     # load network
     model = onnx.load(onnx_input_filename)
 
@@ -88,8 +87,8 @@ def get_w(onnx_input_filename, onnx_output_filename, box_constraints):
 
     init = model.graph.initializer[1] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
-    w = remove_zero_activation_weights(w, box_constraints)
-
+    # w = remove_zero_activation_weights(w, box_constraints)
+    w = np.array(w)
     return w
 """
 
@@ -98,14 +97,13 @@ global update_network = py"update_network"
 
 function update(onnx_input_filename, onnx_output_filename, box_constraints)
     w = get_w(onnx_input_filename, onnx_output_filename, box_constraints)
-    U, Σ, Vᵀ = decompose(w)
+    U, Σ, Vᵀ, new_input_dim = decompose(w)
 
-    new_input_dim = size(Σ, 1)
     Σ = Σ[1:new_input_dim, 1:new_input_dim]
     F = lu(Vᵀ)
     I = inv(F.U * F.P)
     
-    update_network(onnx_input_filename, onnx_output_filename, U * Σ * F.L[1:new_input_dim, 1:new_input_dim])
+    update_network(onnx_input_filename, onnx_output_filename, U[1:new_input_dim, 1:new_input_dim] * Σ * F.L[1:new_input_dim, 1:new_input_dim])
     return I, new_input_dim
 end
 

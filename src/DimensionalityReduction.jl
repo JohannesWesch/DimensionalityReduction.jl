@@ -30,10 +30,10 @@ function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum
     A = A * P
     A[abs.(A) .< 0.000000001] .= 0
 
-    new_constraints = new_box_constraints(I, box_constraints)
     # A_new, b_new = approximate(A, b, new_constraints, new_input_dim, approx)
     println("exact reach")
     A_new, b_new = exact(A, b, new_input_dim)
+    new_constraints = exact_box(A_new, b_new, new_input_dim)
 
     if nnenum && approx == 0
         out = create_output_matrix(vnnlib_input, output_dim)
@@ -47,7 +47,7 @@ function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum
 
     if vnnlib && approx == 0
         println("writing vnnlib-file")
-        create_vnnlib_from_lower_upper_bound(new_constraints, # [1:new_input_dim, 1:2]
+        create_vnnlib_from_lower_upper_bound(new_constraints[1:new_input_dim, 1:2],
         new_input_dim, output_dim, vnnlib_input, vnnlib_output)
     elseif vnnlib
         println("writing vnnlib-file")

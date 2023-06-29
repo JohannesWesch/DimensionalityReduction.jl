@@ -25,10 +25,8 @@ def create_constraints(script, c, d):
             if not (math.isclose(c[i][j], 0, rel_tol=1e-5)):
                 x = Symbol(f"X_{j}", typename=REAL)
                 times.append(Times(Real(float(c[i][j])), x))
-        plus = Plus(times)
 
-        if not plus:
-            continue
+        plus = Plus(times)
         le = LE(plus, Real(float(d[i])))
         declare_formula(script, le)
 

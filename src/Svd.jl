@@ -7,8 +7,14 @@ function decompose(w)
     F = svd(w, full=true)
     U = F.U
     S = F.S
+    # S[abs.(S) .< 0.00001] .= 0
+    # filter!(x->x ≠ 0,S)
+    # println(size(S))
+    # println(S)
+
     Vᵀ = F.Vt
 
+    dₙ = size(S, 1)
     Σ = zeros(d₁, d₂)
     for i in eachindex(S)
         Σ[i, i] = S[i]
@@ -48,7 +54,7 @@ function decompose(w)
 
     Σₚ = Pₗ * Σ * Pᵣ
 
-    return Uₚ, Σₚ, Vᵀₚ
+    return Uₚ, Σₚ, Vᵀₚ, dₙ
 end
 
 function permute_variables(U)
