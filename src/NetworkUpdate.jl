@@ -88,48 +88,10 @@ def get_w(onnx_input_filename, onnx_output_filename, box_constraints):
 
     init = model.graph.initializer[0] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
-    # w = remove_zero_activation_weights(w, box_constraints)
+    w = remove_zero_activation_weights(w, box_constraints)
     w = np.array(w)
     return w
 """
 
 global get_w = py"get_w"
 global update_network = py"update_network"
-
-function update(onnx_input_filename, onnx_output_filename, box_constraints)
-    w = get_w(onnx_input_filename, onnx_output_filename, box_constraints)
-    U, Σ, Vᵀ, new_input_dim = decompose(w)
-
-    L, O = lu_permute(Vᵀ)
-
-    W = U * Σ * L
-    W[abs.(W) .< 0.000000001] .= 0
-    # W = W[:,size(W, 2) - new_input_dim + 1:end]
-    
-    update_network(onnx_input_filename, onnx_output_filename,  W)
-    return O, new_input_dim
-end
-
-#=
-def compact_svd(weights):
-
-    u, s, v = np.linalg.svd(weights)
-    s = s.round(10)
-    s = s[s != 0]
-    new_input_dim = s.size
-    u = np.delete(u, np.s_[new_input_dim:], 1)
-    # v = np.delete(v, np.s_[new_input_dim:], 0)
-
-    s = np.diagflat(s)
-    return u, s, v
-
-
-     init = model.graph.initializer[1] # get first weight matrix
-    w = onnx.numpy_helper.to_array(init)
-    w = remove_zero_activation_weights(w, box_constraints)
-
-    u, s, _ = compact_svd(w) #u, s are compact and v is a square matrix with the size of the input dimension
-
-    new_weights = np.matmul(u, s)
-    new_weights = np.matmul(new_weights, l) # only by LU-Decomposition
-=#

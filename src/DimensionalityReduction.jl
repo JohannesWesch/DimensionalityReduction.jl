@@ -18,45 +18,56 @@ include("NNEnum.jl")
 include("Svd.jl")
 import .NNEnum: run_nnenum
 
-function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum=false)
+function update(onnx_input_filename, onnx_output_filename, box_constraints, d_reduced)
+    weights = get_w(onnx_input_filename, onnx_output_filename, box_constraints)
+    U, Σ, Vᵀ, d_min = decompose(weights)
+    d_old = size(weights, 2)
+    d_new = d_old
+
+    println(d_old)
+    println(d_reduced)
+    println(d_min)
+
+    if (d_old - d_reduced < d_min)
+        println("error") # throw exception
+    elseif d_reduced == -1
+        d_new = d_min
+    elseif d_min <= d_old - d_reduced <= d_old
+        d_new = d_old - d_reduced
+    end
+
+    println(d_new)
+
+    F = lu(Vᵀ, NoPivot())
+    P = get_permutation(size(weights, 1), d_old)
+
+    W = U * Σ * F.L * P
+    W[abs.(W) .< 0.000000001] .= 0
+    
+    update_network(onnx_input_filename, onnx_output_filename,  W[:, 1:d_new])
+    return P * F.U, d_new
+end
+
+function reduce(onnx_input, vnnlib_input, output, approx=0, d_reduced=0, vnnlib=false, nnenum=false)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, approx)
 
     box_constraints, output_dim = get_box_constraints(vnnlib_input)
-    O, new_input_dim = update(onnx_input, onnx_output, box_constraints)
+    U, d_new = update(onnx_input, onnx_output, box_constraints, d_reduced)
 
-    A₁, b = get_A_b_from_box_alternating(box_constraints)
-    A = A₁ * inv(O)
-
+    A, b = get_A_b_from_box_alternating(box_constraints)
+    A = A * inv(U)
     A[abs.(A) .< 0.000000001] .= 0
 
-    # A_new, b_new = approximate(A, b, new_constraints, new_input_dim, approx)
-    println("exact reach")
-    # A_new, b_new = exact(A, b, new_input_dim)
-    A_new = A
-    b_new = b
+    box_constraints = new_box_constraints(U, box_constraints)
+    A_new, b_new = approximate(A, b, box_constraints, d_new, approx)
 
-    box_constraints = new_box_constraints(O, box_constraints)
-    # println(box_constraints)
-    # box_constraints = exact_box(A_new, b_new, new_input_dim)
-    # println(box_constraints)
-    #box_constraints = new_box_constraints(P, box_constraints)
-    #println(box_constraints)
-
-    if nnenum && approx == 0
+    if nnenum
         out = create_output_matrix(vnnlib_input, output_dim)
-        result = run_nnenum(onnx_output, box_constraints[:, 1],
-        box_constraints[:, 2], A_new, b_new[:, 1], out)
-        #print(result[3])
-        #print(A_new * result[3][1, :,1] - b_new)
-        #print(maximum(A_new * result[3][1, :,1] - b_new))
-        #print(maximum(A₁* (inv(O) * result[3][1, :,1]) - b_new))
-        #run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
-        #new_constraints[1:new_input_dim, 2], zeros((0,new_input_dim)), zeros((0,0)), out)
-    elseif nnenum
-        out = create_output_matrix(vnnlib_input, output_dim)
-        run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
-        new_constraints[1:new_input_dim, 2], A_new, b_new[:, 1], out)
+        result = run_nnenum(onnx_output,
+        box_constraints[1:d_new, 1],
+        box_constraints[1:d_new, 2],
+        A_new, b_new[:, 1], out)
     end
 
     if vnnlib && approx == 0
@@ -70,3 +81,10 @@ function reduce(onnx_input, vnnlib_input, output, approx=0, vnnlib=false, nnenum
 end
 
 end # module DimensionalityReduction
+
+#print(result[3])
+        #print(A_new * result[3][1, :,1] - b_new)
+        #print(maximum(A_new * result[3][1, :,1] - b_new))
+        #print(maximum(A₁* (inv(O) * result[3][1, :,1]) - b_new))
+        #run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
+        #new_constraints[1:new_input_dim, 2], zeros((0,new_input_dim)), zeros((0,0)), out)
