@@ -65,22 +65,39 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 	#Settings.SINGLE_SET = False
 
 	Settings.NUM_PROCESSES = 0
-	Settings.TIMING_STATS = False
-	Settings.PARALLEL_ROOT_LP = False
-	Settings.SPLIT_IF_IDLE = False
-	Settings.PRINT_OVERAPPROX_OUTPUT = False
-	Settings.TRY_QUICK_OVERAPPROX = True
-
-	Settings.CONTRACT_ZONOTOPE_LP = True
-	Settings.CONTRACT_LP_OPTIMIZED = True
-	Settings.CONTRACT_LP_TRACK_WITNESSES = True
-
-	Settings.OVERAPPROX_BOTH_BOUNDS = False
-
+	Settings.COMPRESS_INIT_BOX = True
 	Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
-	Settings.OVERAPPROX_GEN_LIMIT_MULTIPLIER = 1.5
-	Settings.OVERAPPROX_LP_TIMEOUT = 0.02
-	Settings.OVERAPPROX_MIN_GEN_LIMIT = 70
+	Settings.TRY_QUICK_OVERAPPROX = False
+
+	Settings.OVERAPPROX_MIN_GEN_LIMIT = np.inf
+	Settings.SPLIT_IF_IDLE = False
+	Settings.OVERAPPROX_LP_TIMEOUT = np.inf
+	Settings.TIMING_STATS = True
+
+	# contraction doesn't help in high dimensions
+	#Settings.OVERAPPROX_CONTRACT_ZONO_LP = False
+	Settings.CONTRACT_ZONOTOPE = False
+	Settings.CONTRACT_ZONOTOPE_LP = False
+
+
+
+
+	# Settings.TIMING_STATS = False
+	# Settings.PARALLEL_ROOT_LP = False
+	# Settings.SPLIT_IF_IDLE = False
+	# Settings.PRINT_OVERAPPROX_OUTPUT = False
+	# Settings.TRY_QUICK_OVERAPPROX = True
+
+	# Settings.CONTRACT_ZONOTOPE_LP = True
+	# Settings.CONTRACT_LP_OPTIMIZED = True
+	# Settings.CONTRACT_LP_TRACK_WITNESSES = True
+
+	# Settings.OVERAPPROX_BOTH_BOUNDS = False
+
+	# Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
+	# Settings.OVERAPPROX_GEN_LIMIT_MULTIPLIER = 1.5
+	# Settings.OVERAPPROX_LP_TIMEOUT = 0.02
+	# Settings.OVERAPPROX_MIN_GEN_LIMIT = 70
 
 	network = load_onnx_network(model)
 	ninputs = A_input.shape[1]

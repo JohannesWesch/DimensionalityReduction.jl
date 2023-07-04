@@ -1,6 +1,7 @@
 using LinearAlgebra
 using PyCall
 include("Svd.jl")
+include("Exact.jl")
 
 py"""
 import numpy as np
@@ -62,12 +63,12 @@ def update_network(onnx_input_filename, onnx_output_filename, new_weights):
     model = onnx.load(onnx_input_filename)
 
     # weight update
-    name = model.graph.initializer[1].name
+    name = model.graph.initializer[0].name
     new_weights = new_weights.astype(np.single)
     tensor = onnx.numpy_helper.from_array(new_weights)
 
-    model.graph.initializer[1].CopyFrom(tensor)
-    model.graph.initializer[1].name = name
+    model.graph.initializer[0].CopyFrom(tensor)
+    model.graph.initializer[0].name = name
 
     new_input_dim = new_weights.shape[1]
 
@@ -85,7 +86,7 @@ def update_network(onnx_input_filename, onnx_output_filename, new_weights):
 def get_w(onnx_input_filename, onnx_output_filename, box_constraints):
     model = onnx.load(onnx_input_filename)
 
-    init = model.graph.initializer[1] # get first weight matrix
+    init = model.graph.initializer[0] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
     # w = remove_zero_activation_weights(w, box_constraints)
     w = np.array(w)
@@ -99,12 +100,14 @@ function update(onnx_input_filename, onnx_output_filename, box_constraints)
     w = get_w(onnx_input_filename, onnx_output_filename, box_constraints)
     U, Σ, Vᵀ, new_input_dim = decompose(w)
 
-    Σ = Σ[1:new_input_dim, 1:new_input_dim]
-    F = lu(Vᵀ)
-    I = inv(F.U * F.P)
+    L, O = lu_permute(Vᵀ)
+
+    W = U * Σ * L
+    W[abs.(W) .< 0.000000001] .= 0
+    # W = W[:,size(W, 2) - new_input_dim + 1:end]
     
-    update_network(onnx_input_filename, onnx_output_filename, U[1:new_input_dim, 1:new_input_dim] * Σ * F.L[1:new_input_dim, 1:new_input_dim])
-    return I, new_input_dim
+    update_network(onnx_input_filename, onnx_output_filename,  W)
+    return O, new_input_dim
 end
 
 #=
