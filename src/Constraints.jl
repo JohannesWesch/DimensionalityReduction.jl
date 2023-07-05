@@ -15,7 +15,7 @@ function get_box_constraints(vnnlib_file)
         global b = bounds[1:n_input, 1:2]
         break
     end
-    return b, n_output
+    return b, n_input, n_output
 end
 
 function get_A_b_from_box(box_constraints)

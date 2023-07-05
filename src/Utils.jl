@@ -43,3 +43,8 @@ def get_input_constraints(vnnlib_file):
 """
 
 global get_input_constraints = py"get_input_constraints"
+
+function round(M)
+    M[abs.(M) .< 0.00001] .= 0
+    return M
+end

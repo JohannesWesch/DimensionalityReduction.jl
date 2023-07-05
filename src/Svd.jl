@@ -1,4 +1,5 @@
 using LinearAlgebra
+include("Utils.jl")
 
 function decompose(w)
     d₁ = size(w, 1)
@@ -6,12 +7,10 @@ function decompose(w)
 
     F = svd(w, full=true)
     U = F.U
-    S = F.S
+    S = round(F.S)
     Vᵀ = F.Vt
 
-    S[abs.(S) .< 0.00001] .= 0
     filter!(x->x≠0.0,S)
-
     Σ = zeros(d₁, d₂)
     for i in eachindex(S)
         Σ[i, i] = S[i]

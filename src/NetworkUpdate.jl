@@ -83,8 +83,8 @@ def update_network(onnx_input_filename, onnx_output_filename, new_weights):
     onnx.save(model, onnx_output_filename)
     return
 
-def get_w(onnx_input_filename, onnx_output_filename, box_constraints):
-    model = onnx.load(onnx_input_filename)
+def get_w(onnx_input, box_constraints):
+    model = onnx.load(onnx_input)
 
     init = model.graph.initializer[0] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
