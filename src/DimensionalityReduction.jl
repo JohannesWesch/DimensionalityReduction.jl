@@ -18,28 +18,28 @@ include("NNEnum.jl")
 include("Svd.jl")
 import .NNEnum: run_nnenum
 
-function update(onnx_input, onnx_output, box_constraints, d_reduced, d_old)
+function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
     weights = get_w(onnx_input, box_constraints)
     U, Σ, Vᵀ, d_min = decompose(weights)
     
-    d_new = get_new_dim(d_old, d_min, d_reduced)
+    d_new = get_new_dim(d_old, d_min, d_to_reduce)
 
     F = lu(Vᵀ, NoPivot())
     P = get_permutation(size(weights, 1), d_old)
 
-    W = round(U * Σ * F.L * P) #U * Σ * F.L * P
+    W = round(U * Σ * F.L) #U * Σ * F.L * P
     
     update_network(onnx_input, onnx_output,  W[:, 1:d_new])
-    return P * F.U, d_new #P * F.U
+    return F.U, d_new #P * F.U
 end
 
-function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_reduced=0, vnnlib=false, nnenum=false)
+function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0, vnnlib=false, nnenum=false)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
 
     if reduce
-        U, d_new = update(onnx_input, onnx_output, box_constraints, d_reduced, d_old)
+        U, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
         A, b = get_A_b_from_box_alternating(box_constraints)
         A = round(A * inv(U))
         box_constraints = new_box_constraints(U, box_constraints)
@@ -50,6 +50,8 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_reduc
             A_new, b_new = block(A, b, d_new, d_old)
         elseif method == 2
             A_new, b_new = approximate(A, b, box_constraints, d_new, approx)
+        elseif method == 4
+            test_vrep(A, b, d_old-d_new)
         end
 
         if nnenum
