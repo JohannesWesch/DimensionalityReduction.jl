@@ -25,7 +25,7 @@ function get_A_b_from_box(box_constraints)
     num_variables = n_input
 
     A = zeros(num_constraints, num_variables)
-    b = zeros(num_constraints, 1)
+    b = zeros(num_constraints,)
 
     for i in 1:n_input
         A[i, i] = -1
@@ -47,7 +47,7 @@ function get_A_b_from_box_alternating(box_constraints)
     num_variables = n_input
 
     A = zeros(num_constraints, num_variables)
-    b = zeros(num_constraints, 1)
+    b = zeros(num_constraints,)
 
     for i in 1:n_input
         A[2 * i - 1, i] = -1

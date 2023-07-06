@@ -18,7 +18,6 @@ def create_constraints(script, c, d):
     num_variables = c.shape[1]
 
     for i in range(num_constraints):
-        # Times((Real(0.0)), Symbol(f"X_0", typename=REAL))
         times = []
         plus = {}
         for j in range(num_variables):
@@ -99,7 +98,7 @@ def create_vnnlib_from_lower_upper_bound(constraints, num_inputs, num_outputs, i
     script = SmtLibScript()
     create_input_variables(script, num_inputs)
     create_output_variables(script, num_outputs)
-    # create_with_lower_upper_bounds(script, constraints)
+    create_with_lower_upper_bounds(script, constraints)
     script.to_file(output_filename, daggify=False)
     c = get_constraints_as_string(constraints)
     s = get_output_constraints(input_filename)

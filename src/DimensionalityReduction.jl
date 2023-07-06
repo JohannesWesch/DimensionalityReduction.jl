@@ -58,7 +58,7 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
 
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)
-            result = run_nnenum(onnx_output, box_constraints[1:d_new, 1], box_constraints[1:d_new, 2], A_new, b_new[:, 1], out)
+            result = run_nnenum(onnx_output, box_constraints[1:d_new, 1], box_constraints[1:d_new, 2], A_new, b_new, out)
         end
     
         if vnnlib

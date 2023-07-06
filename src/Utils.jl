@@ -29,6 +29,11 @@ function create_output_matrix(vnnlib, n_output)
     return disjunctions
 end
 
+function round(M)
+    M[abs.(M) .< 0.00001] .= 0
+    return M
+end
+
 py"""
 def get_input_constraints(vnnlib_file):
     s = ""
@@ -39,12 +44,5 @@ def get_input_constraints(vnnlib_file):
             s += line
            
     return s
-
 """
-
 global get_input_constraints = py"get_input_constraints"
-
-function round(M)
-    M[abs.(M) .< 0.00001] .= 0
-    return M
-end
