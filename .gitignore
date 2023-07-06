@@ -26,8 +26,10 @@ Manifest.toml
 *.vnnlib
 *.onnx
 
-!prop_0_0.80.vnnlib
-!test.onnx
+!digit-net_16x2.onnx
+!digit-net_16x4.onnx
+!digit-net_64x2.onnx
+!digit-net_64x4.onnx
 
 **/benchmarks/mnistfc
 **/benchmarks/digits_reduced

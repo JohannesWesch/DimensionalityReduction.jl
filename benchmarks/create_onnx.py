@@ -8,19 +8,28 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 import onnx
 from skimage.transform import downscale_local_mean
+import numpy as np
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters
+#input-dim 16
 input_size = 16
 hidden_size1 = 8
-hidden_size2 = 32
+hidden_size2 = 64
+
+#input-dim 64
+#input_size = 64
+#hidden_size1 = 32
+#hidden_size2 = 128
+
+
 num_classes = 10
 num_epochs = 2
-#batch_size = 100
+batch_size = 32
 learning_rate = 0.001
-onnx_file = 'benchmarks/digits/test.onnx'
+onnx_file = 'benchmarks/digits/digit-net_16x4.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()
@@ -29,11 +38,17 @@ data = sklearn_data.data
 scaled = []
 for img in data:
     scaled.append(downscale_local_mean(img.reshape(8, 8), (2,2)).flatten())
+scaled = np.array(scaled)
 
 target = sklearn_data.target
 
 # Convert the NumPy arrays to PyTorch tensors
+#input dim 16
 data_tensor = torch.tensor(scaled, dtype=torch.float32)
+
+#input dim 64
+#data_tensor = torch.tensor(data, dtype=torch.float32)
+
 target_tensor = torch.tensor(target, dtype=torch.long)
 
 
@@ -62,14 +77,34 @@ transform = transforms.Compose([
 ])
 
 # Create a data loader
-batch_size = 32
 train_loader = DataLoader(custom_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(custom_dataset, batch_size=batch_size, shuffle=False)
 
 # Fully connected neural network with one hidden layer
-class NeuralNet(nn.Module):
+class NeuralNet2(nn.Module):
     def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
-        super(NeuralNet, self).__init__()
+        super(NeuralNet2, self).__init__()
+        self.input_size = input_size
+        self.l0 = nn.Flatten()
+        self.l1 = nn.Linear(input_size, hidden_size1)
+        self.relu1 = nn.ReLU()
+        self.l2 = nn.Linear(hidden_size1, hidden_size2)
+        self.relu2 = nn.ReLU()
+        self.l3 = nn.Linear(hidden_size2, num_classes)
+
+    def forward(self, x):
+        out = self.l0(x)
+        out = self.l1(out)
+        out = self.relu1(out)
+        out = self.l2(out)
+        out = self.relu2(out)
+        out = self.l3(out)
+        # no activation and no softmax at the end
+        return out
+    
+class NeuralNet4(nn.Module):
+    def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
+        super(NeuralNet4, self).__init__()
         self.input_size = input_size
         self.l0 = nn.Flatten()
         self.l1 = nn.Linear(input_size, hidden_size1)
@@ -96,7 +131,11 @@ class NeuralNet(nn.Module):
         # no activation and no softmax at the end
         return out
 
-model = NeuralNet(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+# neural net with 2 hidden layers
+#model = NeuralNet2(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+
+# neural net with 4 hidden layers
+model = NeuralNet4(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -108,7 +147,7 @@ for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
         # origin shape: [100, 1, 28, 28]
         # resized: [100, 784]
-        images = images.reshape(-1, 16).to(device)
+        images = images.reshape(-1, input_size).to(device)
         labels = labels.to(device)
 
         # Forward pass
@@ -129,7 +168,7 @@ with torch.no_grad():
     n_correct = 0
     n_samples = 0
     for images, labels in test_loader:
-        images = images.reshape(-1, 16).to(device)
+        images = images.reshape(-1, input_size).to(device)
         labels = labels.to(device)
         outputs = model(images)
         # max returns (value ,index)
@@ -142,16 +181,16 @@ with torch.no_grad():
 
 # torch.save(model.state_dict(), 'mnist.pt')
 
-dummy_input = torch.randn(1, 16, 1).to(device)
+dummy_input = torch.randn(1, input_size, 1).to(device)
 input_names = ["input_0"]
 output_names = ["output_0"]
 torch.onnx.export(model, dummy_input, onnx_file, verbose=True, input_names=input_names, output_names=output_names)
 
-model = onnx.load(onnx_file)
+#model = onnx.load(onnx_file)
 
-model.graph.node[2].output[0] = "relu1"
-model.graph.node[3].input[0] = "relu1"
-model.graph.node[4].output[0] = "relu2"
-model.graph.node[5].input[0] = "relu2"
+#model.graph.node[2].output[0] = "relu1"
+#model.graph.node[3].input[0] = "relu1"
+#model.graph.node[4].output[0] = "relu2"
+#model.graph.node[5].input[0] = "relu2"
 
-onnx.save(model, onnx_file)
+#onnx.save(model, onnx_file)
