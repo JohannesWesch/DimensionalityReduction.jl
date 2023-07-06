@@ -4,9 +4,10 @@ using Base.Threads
 
 include("Constraints.jl")
 
-function approximate(A, b, new_constraints, new_input_dim, approx)
+function approximate(A, b, new_constraints, new_input_dim)
     global A_new = [] 
     global b_new = []
+    approx = 3
     if approx == 0
         A_new, b_new = get_A_b_from_box_alternating(new_constraints[1:new_input_dim, 1:2])
     elseif approx == 1

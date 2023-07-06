@@ -49,8 +49,10 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
         elseif method == 1
             A_new, b_new = block(A, b, d_new, d_old)
         elseif method == 2
-            A_new, b_new = approximate(A, b, box_constraints, d_new, approx)
-        elseif method == 4
+            A_new, b_new = approximate(A, b, box_constraints, d_new)
+            #A_new = A_new[1:end-2*d_to_reduce, :]
+            #b_new = b_new[1:end-2*d_to_reduce, :]
+        elseif method == 3
             test_vrep(A, b, d_old-d_new)
         end
 
