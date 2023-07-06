@@ -1,6 +1,5 @@
 using VNNLib
 using PyCall
-
 include("Utils.jl")
 
 global read_buffer = "read_buffer.vnnlib"

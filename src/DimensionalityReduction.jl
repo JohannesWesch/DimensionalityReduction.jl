@@ -3,14 +3,9 @@ module DimensionalityReduction
 export reduce
 
 using PyCall
-using Polyhedra
-using CDDLib
-using Gurobi
-using DelimitedFiles
 include("Constraints.jl")
 include("Approximation.jl")
 include("Exact.jl")
-include("PathGenerator.jl")
 include("NetworkUpdate.jl")
 include("VNNLibGenerator.jl")
 include("Utils.jl")
@@ -89,8 +84,8 @@ end
 end # module DimensionalityReduction
 
 #print(result[3])
-        #print(A_new * result[3][1, :,1] - b_new)
-        #print(maximum(A_new * result[3][1, :,1] - b_new))
-        #print(maximum(A₁* (inv(O) * result[3][1, :,1]) - b_new))
-        #run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
-        #new_constraints[1:new_input_dim, 2], zeros((0,new_input_dim)), zeros((0,0)), out)
+#print(A_new * result[3][1, :,1] - b_new)
+#print(maximum(A_new * result[3][1, :,1] - b_new))
+#print(maximum(A₁* (inv(O) * result[3][1, :,1]) - b_new))
+#run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
+#new_constraints[1:new_input_dim, 2], zeros((0,new_input_dim)), zeros((0,0)), out)

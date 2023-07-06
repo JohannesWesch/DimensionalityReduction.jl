@@ -49,21 +49,6 @@ def prepare_star(star):
 	)
 
 def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
-	# Settings.UNDERFLOW_BEHAVIOR = "warn"
-	# TODO(steuber): Seem to have numerical issue here?
-	# Settings.SKIP_CONSTRAINT_NORMALIZATION = False
-	# Settings.PRINT_PROGRESS = True
-	# Settings.PRINT_OUTPUT = True
-	# #Settings.RESULT_SAVE_COUNTER_STARS = True
-	# #Settings.INPUT_SPACE_MINIMIZATION = False
-	# #??
-	# Settings.FIND_CONCRETE_COUNTEREXAMPLES = True
-	# Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
-	# Settings.NUM_PROCESSES = 0
-	#Settings.CHECK_SINGLE_THREAD_BLAS = False
-	#Settings.TRY_QUICK_OVERAPPROX = False
-	#Settings.SINGLE_SET = False
-
 	Settings.NUM_PROCESSES = 0
 	Settings.COMPRESS_INIT_BOX = True
 	Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
@@ -78,26 +63,6 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 	#Settings.OVERAPPROX_CONTRACT_ZONO_LP = False
 	Settings.CONTRACT_ZONOTOPE = False
 	Settings.CONTRACT_ZONOTOPE_LP = False
-
-
-
-
-	# Settings.TIMING_STATS = False
-	# Settings.PARALLEL_ROOT_LP = False
-	# Settings.SPLIT_IF_IDLE = False
-	# Settings.PRINT_OVERAPPROX_OUTPUT = False
-	# Settings.TRY_QUICK_OVERAPPROX = True
-
-	# Settings.CONTRACT_ZONOTOPE_LP = True
-	# Settings.CONTRACT_LP_OPTIMIZED = True
-	# Settings.CONTRACT_LP_TRACK_WITNESSES = True
-
-	# Settings.OVERAPPROX_BOTH_BOUNDS = False
-
-	# Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
-	# Settings.OVERAPPROX_GEN_LIMIT_MULTIPLIER = 1.5
-	# Settings.OVERAPPROX_LP_TIMEOUT = 0.02
-	# Settings.OVERAPPROX_MIN_GEN_LIMIT = 70
 
 	network = load_onnx_network(model)
 	ninputs = A_input.shape[1]
@@ -147,29 +112,4 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 end
 
 	export run_nnenum
-
-	# function to_status(status :: String)
-	# 	if status == "safe"
-	# 		return Safe
-	# 	elseif startswith(status,"unsafe")
-	# 		return Unsafe
-	# 	else
-	# 		return Unknown
-	# 	end
-	# end
-
-	# function verify_enumerative(model, olnnv_query :: OlnnvQuery)
-	# 	print_msg("[NNENUM] Running nnenum now...")
-	# 	lb = [b[1] for b in olnnv_query.bounds]
-	# 	ub = [b[2] for b in olnnv_query.bounds]
-	# 	print_msg("[NNENUM] lb: ", lb)
-	# 	print_msg("[NNENUM] ub: ", ub)
-	# 	res, _ = iterate(run_nnenum(model, lb, ub, olnnv_query.input_matrix, olnnv_query.input_bias, olnnv_query.disjunction, false))
-	# 	if isnothing(res)
-	# 		return OlnnvResult()
-	# 	else
-	# 		return OlnnvResult(to_status(res[1]),res[2],map(Star,res[3][2]))
-	# 	end
-	# end
-
 end

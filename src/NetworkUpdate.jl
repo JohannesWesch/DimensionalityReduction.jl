@@ -1,7 +1,4 @@
-using LinearAlgebra
 using PyCall
-include("Svd.jl")
-include("Exact.jl")
 
 py"""
 import numpy as np
@@ -35,7 +32,6 @@ def remove_zero_activation_weights(weights, box_constraints):
 
     return weights
 
-
 def get_num_inputs_outputs(model):
     inputs = model.graph.input
     assert len(inputs) == 1, f"expected single onnx network input, got: {inputs}"
@@ -55,8 +51,6 @@ def get_num_inputs_outputs(model):
         num_outputs *= n
 
     return num_inputs, num_outputs
-
-
 
 def update_network(onnx_input_filename, onnx_output_filename, new_weights):
     # load network
