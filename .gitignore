@@ -25,4 +25,9 @@ Manifest.toml
 
 *.vnnlib
 *.onnx
-**/benchmarks
+
+!prop_0_0.80.vnnlib
+!test.onnx
+
+**/benchmarks/mnistfc
+**/benchmarks/digits_reduced
