@@ -61,6 +61,8 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
             A_new, b_new = fourier_approx(A, b, d_to_reduce, d_old)
         elseif method == 3
             A_new, b_new = block_approx(A, b, d_new, d_old)
+        elseif method == 4
+            A_new, b_new = approximate_support_function(A, b, d_new)
         end
 
         if nnenum

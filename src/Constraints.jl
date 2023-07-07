@@ -1,6 +1,4 @@
 using VNNLib
-using PyCall
-include("Utils.jl")
 
 global read_buffer = "read_buffer.vnnlib"
 
@@ -65,4 +63,15 @@ function convert_vnnlib(vnnlib_file, vnnlib_file_converted)
     f = open(vnnlib_file_converted, "w+")
     write(f, s)
     close(f)
+end
+
+function get_input_constraints(vnnlib_file)
+    s = ""
+    for line in eachline(vnnlib_file, keep=true)
+        if occursin("Output constraints:", line)
+            return s
+        end
+        s *= line
+    end
+    return s
 end

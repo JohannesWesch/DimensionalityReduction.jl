@@ -42,3 +42,24 @@ function exact_box(V, bounds)
 
     return new_bounds
 end
+
+function exact_box_with_gurobi(A, b)
+    dim = size(A, 2)
+    b = vec(b)
+    P = HPolytope(A, b)
+    box = zeros(dim, 2)
+
+    Threads.@threads for i in 1:dim
+        d₋ = zeros(dim)
+        d₋[i] = -1
+        s₋ = ρ(d₋, P, solver = Gurobi.Optimizer)
+
+        d₊ = zeros(dim)
+        d₊[i] = 1
+        s₊ = ρ(d₊, P, solver = Gurobi.Optimizer)
+
+        box[i, 1] = -s₋
+        box[i, 2] = s₊
+    end
+    return box
+end

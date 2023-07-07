@@ -56,18 +56,6 @@ function round(M)
     return M
 end
 
-
-function get_input_constraints(vnnlib_file)
-    s = ""
-    for line in eachline(vnnlib_file, keep=true)
-        if occursin("Output constraints:", line)
-            return s
-        end
-        s *= line
-    end
-    return s
-end
-
 function get_new_dim(d_old, d_min, d_reduced)
     d_new = d_old
     if (d_old - d_reduced < d_min)
