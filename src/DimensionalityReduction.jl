@@ -34,10 +34,9 @@ end
 function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
     weights = get_w(onnx_input, box_constraints)
     U, Σ, Vᵀ, d_min = decompose(weights)
+    println(d_min)
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
-
     W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min)
-    
     update_network(onnx_input, onnx_output,  W₁)
     return W₂, d_new
 end
@@ -49,26 +48,24 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
 
     if reduce
-        U, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
+        W₂, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
         A, b = get_A_b_from_box_alternating(box_constraints)
-        A = round(A * inv(U))
-        box_constraints = new_box_constraints(U, box_constraints)
+        A = round(A * inv(W₂))
+        new_constraints = exact_box(W₂, box_constraints)
 
         if method == 0
             A_new, b_new = fourier(A, b, d_to_reduce)
         elseif method == 1
             A_new, b_new = block(A, b, d_new, d_old)
         elseif method == 2
-            A_new, b_new = approximate(A, b, box_constraints, d_new)
-            #A_new = A_new[1:end-2*d_to_reduce, :]
-            #b_new = b_new[1:end-2*d_to_reduce, :]
+            A_new, b_new = fourier_approx(A, b, d_to_reduce, d_old)
         elseif method == 3
-            test_vrep(A, b, d_old-d_new)
+            A_new, b_new = block_approx(A, b, d_new, d_old)
         end
 
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)
-            result = run_nnenum(onnx_output, box_constraints[1:d_new, 1], box_constraints[1:d_new, 2], A_new, b_new, out)
+            result = run_nnenum(onnx_output, new_constraints[1:d_new, 1], new_constraints[1:d_new, 2], A_new, b_new, out)
         end
     
         if vnnlib

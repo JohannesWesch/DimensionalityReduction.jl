@@ -33,20 +33,6 @@ function approximate(A, b, new_constraints, new_input_dim)
     # return vcat(A₀, A_new), vcat(b₀, b_new)
 end
 
-# apply V on the old bounds to get bounds for the new ̃x
-function new_box_constraints(V, bounds)
-    n_variables = size(V, 2)
-    new_bounds = zeros(n_variables, 2)
-
-    V⁺ = max.(0, V)
-    V⁻ = min.(0, V)
-
-    new_bounds[:,1] = V⁺ * bounds[:,1] + V⁻ * bounds[:,2]
-    new_bounds[:,2] = V⁺ * bounds[:,2] + V⁻ * bounds[:,1]
-
-    return new_bounds
-end
-
 # use the bounds for the n-r dimensions that we want to get rid of
 # and subtract that from b
 function approximate_other_dimensions(A, b, bounds, new_input_dim)
@@ -173,3 +159,27 @@ end
             b_new[i] += bounds[j, 1] * A[i, j]
         end
     end=#
+
+#=
+function exact_box_with_gurobi(A, b)
+    dim = size(A, 2)
+    
+    b = vec(b)
+    P = HPolytope(A, b)
+    box = zeros(dim, 2)
+
+   for i in 1:dim # Threads.@threads 
+        d₋ = zeros(dim)
+        d₋[i] = -1
+        s₋ = ρ(d₋, P, solver = Gurobi.Optimizer)
+
+        d₊ = zeros(dim)
+        d₊[i] = 1
+        s₊ = ρ(d₊, P, solver = Gurobi.Optimizer)
+
+        box[i, 1] = -s₋
+        box[i, 2] = s₊
+    end
+    return box
+end
+=#

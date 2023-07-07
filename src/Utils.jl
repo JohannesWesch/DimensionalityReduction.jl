@@ -77,7 +77,6 @@ function get_new_dim(d_old, d_min, d_reduced)
     elseif d_min <= d_old - d_reduced <= d_old
         d_new = d_old - d_reduced
     end
-    print(d_min)
     return d_new
 end
 

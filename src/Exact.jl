@@ -28,3 +28,17 @@ function block(A, b, d_new, d_old)
     print(size(A))
     return A, b
 end
+
+# apply V on the old bounds to get bounds for the new ̃x
+function exact_box(V, bounds)
+    n_variables = size(V, 2)
+    new_bounds = zeros(n_variables, 2)
+
+    V⁺ = max.(0, V)
+    V⁻ = min.(0, V)
+
+    new_bounds[:,1] = V⁺ * bounds[:,1] + V⁻ * bounds[:,2]
+    new_bounds[:,2] = V⁺ * bounds[:,2] + V⁻ * bounds[:,1]
+
+    return new_bounds
+end
