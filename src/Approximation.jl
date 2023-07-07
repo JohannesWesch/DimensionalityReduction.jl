@@ -1,5 +1,4 @@
 using JuMP, Gurobi
-using LazySets
 using Base.Threads
 
 # use the bounds for the n-r dimensions that we want to get rid of
@@ -13,7 +12,6 @@ function approximate_other_dimensions(A, b, bounds, new_input_dim)
 
     b_new -= A⁺[:, new_input_dim + 1:end] * bounds[new_input_dim + 1:end, 1]
     b_new -= A⁻[:, new_input_dim + 1:end] * bounds[new_input_dim + 1:end, 2]
-    # b_new -= A[:, new_input_dim + 1:end] * bounds[new_input_dim + 1:end, 1]
     return A_new, b_new
 end
 

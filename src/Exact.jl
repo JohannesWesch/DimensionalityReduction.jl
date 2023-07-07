@@ -43,7 +43,7 @@ function exact_box(V, bounds)
     return new_bounds
 end
 
-function exact_box_with_gurobi(A, b)
+function exact_box_with_optimizer(A, b)
     dim = size(A, 2)
     b = vec(b)
     P = HPolytope(A, b)
