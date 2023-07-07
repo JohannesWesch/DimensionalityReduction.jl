@@ -6,7 +6,6 @@ global read_buffer = "read_buffer.vnnlib"
 
 function get_box_constraints(vnnlib_file)
     convert_vnnlib(vnnlib_file, read_buffer)
-    
     f, n_input, n_output = get_ast(read_buffer)
     global b = []
     
@@ -63,7 +62,7 @@ end
 
 function convert_vnnlib(vnnlib_file, vnnlib_file_converted)
     s = get_input_constraints(vnnlib_file)
-    f = open(vnnlib_file_converted, "w")
+    f = open(vnnlib_file_converted, "w+")
     write(f, s)
     close(f)
 end

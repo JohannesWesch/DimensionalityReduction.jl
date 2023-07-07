@@ -1,5 +1,3 @@
-using PyCall
-
 function create_folder_path(onnx_input, vnnlib_input, output)
     onnx = split(onnx_input, "/")
     onnx = split(onnx[end], ".")
@@ -58,15 +56,14 @@ function round(M)
     return M
 end
 
-py"""
-def get_input_constraints(vnnlib_file):
+
+function get_input_constraints(vnnlib_file)
     s = ""
-    with open(vnnlib_file, 'r') as file:
-        for line in file:
-            if 'Output constraints:' in line:
-                return s
-            s += line
-           
+    for line in eachline(vnnlib_file, keep=true)
+        if occursin("Output constraints:", line)
+            return s
+        end
+        s *= line
+    end
     return s
-"""
-global get_input_constraints = py"get_input_constraints"
+end

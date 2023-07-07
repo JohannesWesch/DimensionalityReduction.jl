@@ -11,6 +11,7 @@ include("VNNLibGenerator.jl")
 include("Utils.jl")
 include("NNEnum.jl")
 include("Svd.jl")
+include("Mix.jl")
 import .NNEnum: run_nnenum
 
 function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
@@ -28,7 +29,8 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
     return F.U, d_new #P * F.U
 end
 
-function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0, vnnlib=false, nnenum=false)
+function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0,
+     vnnlib=false, nnenum=false)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
@@ -40,7 +42,7 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
         box_constraints = new_box_constraints(U, box_constraints)
 
         if method == 0
-            A_new, b_new = fourier(A, b, d_old-d_new)
+            A_new, b_new = fourier(A, b, d_to_reduce)
         elseif method == 1
             A_new, b_new = block(A, b, d_new, d_old)
         elseif method == 2
