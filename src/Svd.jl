@@ -1,5 +1,4 @@
 using LinearAlgebra
-include("Utils.jl")
 
 function decompose(w)
     d₁ = size(w, 1)
@@ -18,5 +17,9 @@ function decompose(w)
     dₙ = size(S, 1)
 
     return U, Σ, Vᵀ, dₙ
+end
 
+function round(M)
+    M[abs.(M) .< 0.00001] .= 0
+    return M
 end

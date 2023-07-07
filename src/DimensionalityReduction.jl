@@ -12,6 +12,7 @@ include("Utils.jl")
 include("NNEnum.jl")
 include("Svd.jl")
 include("Mix.jl")
+include("PCA.jl")
 import .NNEnum: run_nnenum
 
 function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
@@ -24,7 +25,7 @@ function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
     elseif fact == 1
         P = get_permutation(d_min, d_old)
         W₁ = round(U * Σ * F.L * P)
-        W₂ = P * F.U
+        W₂ = round(P * F.U)
     elseif fact == 2
         #do nothing
     end
@@ -63,6 +64,8 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
             A_new, b_new = block_approx(A, b, d_new, d_old)
         elseif method == 4
             A_new, b_new = approximate_support_function(A, b, d_new)
+        elseif method == 5
+            A_new, b_new = pca_approx(A, b, d_new)
         end
 
         if nnenum
