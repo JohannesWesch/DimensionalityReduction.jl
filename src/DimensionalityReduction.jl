@@ -14,29 +14,42 @@ include("Svd.jl")
 include("Mix.jl")
 import .NNEnum: run_nnenum
 
-function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
+function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
+    F = lu(Vᵀ, NoPivot())
+    W₁ = U * Σ
+    W₂ = Vᵀ
+    if fact == 0
+        W₁ = round(U * Σ * F.L)
+        W₂ = F.U
+    elseif fact == 1
+        P = get_permutation(d_min, d_old)
+        W₁ = round(U * Σ * F.L * P)
+        W₂ = P * F.U
+    elseif fact == 2
+        #do nothing
+    end
+    return W₁[:, 1:d_new], W₂
+end
+
+function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
     weights = get_w(onnx_input, box_constraints)
     U, Σ, Vᵀ, d_min = decompose(weights)
-    
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
 
-    F = lu(Vᵀ, NoPivot())
-    P = get_permutation(size(weights, 1), d_old)
-
-    W = round(U * Σ * F.L) #U * Σ * F.L * P
+    W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min)
     
-    update_network(onnx_input, onnx_output,  W[:, 1:d_new])
-    return F.U, d_new #P * F.U
+    update_network(onnx_input, onnx_output,  W₁)
+    return W₂, d_new
 end
 
 function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0,
-     vnnlib=false, nnenum=false)
+     vnnlib=false, nnenum=false, factorization=0)
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
 
     if reduce
-        U, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old)
+        U, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
         A, b = get_A_b_from_box_alternating(box_constraints)
         A = round(A * inv(U))
         box_constraints = new_box_constraints(U, box_constraints)
@@ -69,17 +82,6 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
             out = create_output_matrix(vnnlib_input, output_dim)
             run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
         end
-    end
-end
-
-function get_new_dim(d_old, d_min, d_reduced)
-    d_new = d_old
-    if (d_old - d_reduced < d_min)
-        println("error") # throw exception
-    elseif d_reduced == -1
-        d_new = d_min
-    elseif d_min <= d_old - d_reduced <= d_old
-        d_new = d_old - d_reduced
     end
 end
 

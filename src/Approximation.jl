@@ -35,7 +35,7 @@ end
 
 # apply V on the old bounds to get bounds for the new ̃x
 function new_box_constraints(V, bounds)
-    n_variables = size(V)[1]
+    n_variables = size(V, 2)
     new_bounds = zeros(n_variables, 2)
 
     V⁺ = max.(0, V)

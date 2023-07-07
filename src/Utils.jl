@@ -67,3 +67,31 @@ function get_input_constraints(vnnlib_file)
     end
     return s
 end
+
+function get_new_dim(d_old, d_min, d_reduced)
+    d_new = d_old
+    if (d_old - d_reduced < d_min)
+        error("unimplemented")
+    elseif d_reduced == -1
+        d_new = d_min
+    elseif d_min <= d_old - d_reduced <= d_old
+        d_new = d_old - d_reduced
+    end
+    print(d_min)
+    return d_new
+end
+
+function get_permutation(dim₁, dim₂)
+    P = zeros(dim₂, dim₂)
+    for i in 1:dim₁
+        P[i, i] = 1
+    end
+    for i in reverse(dim₁:dim₂)
+        for j in dim₁:dim₂
+            if(i+j == dim₁ + dim₂ + 1)
+                P[j, i] = 1
+            end
+        end
+    end
+    return P
+end

@@ -41,25 +41,7 @@ function exact_box(A, b)
     return box
 end
 
-function get_permutation(dim₁, dim₂)
 
-    P = zeros(dim₂, dim₂)
-
-    for i in 1:dim₁
-        P[i, i] = 1
-    end
-
-    for i in reverse(dim₁:dim₂)
-        for j in dim₁:dim₂
-            if(i+j == dim₁ + dim₂ + 1)
-                P[j, i] = 1
-            end
-        end
-    end
-
-    return P
-
-end
 
 function test_vrep(A, b, d_reduced)
     b = vec(b)
