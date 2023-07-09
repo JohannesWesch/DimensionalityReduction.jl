@@ -12,7 +12,6 @@ function fourier(A, b, d_to_reduce)
         h_lazy = LazySets.HPolytope(reduced)
         A, b = tosimplehrep(h_lazy)
     end
-    println(size(A))
     return A, b
 end
 
@@ -24,8 +23,6 @@ function block(A, b, d_new, d_old)
     reduced = Polyhedra.eliminate(p_polyhedra, var, BlockElimination())
     h_lazy = LazySets.HPolytope(reduced)
     A, b = tosimplehrep(h_lazy)
-
-    print(size(A))
     return A, b
 end
 

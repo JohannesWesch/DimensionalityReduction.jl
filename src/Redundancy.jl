@@ -4,6 +4,7 @@ using LazySets
 function remove_redundant(constraints)
     backend = Gurobi.Optimizer
     A, b = tosimplehrep(constraints)
+   
     m, n = size(A)
     non_redundant_indices = 1:m
 
@@ -14,11 +15,11 @@ function remove_redundant(constraints)
         Ar = A[non_redundant_indices, :]
         br = b[non_redundant_indices]
         @assert br[i] == b[j]
-        br[i] += 1.5
+        br[i] += 1.8
         lp = linprog(-α, Ar, br, backend)
        
         objval = -lp.objval
-        if objval <= b[j] + 1.5
+        if objval <= b[j] + 1.8
             # the constraint is redundant
             non_redundant_indices = setdiff(non_redundant_indices, j)
         else
@@ -56,13 +57,3 @@ function swap(A, b)
     end
     return A_swap, b_swap
 end
-
-#A = [1 2; 3 4; 5 6; 7 8]
-#b = [1, 2, 3, 4]
-
-#swap(A, b)
-
-#h_rep = LazySets.HPolytope(A, b)
-#constraints = constraints_list(h_rep)
-
-#A, b = remove_redundant(constraints)

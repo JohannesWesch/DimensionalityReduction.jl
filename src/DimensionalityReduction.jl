@@ -67,6 +67,7 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
         elseif method == 5
             A_new, b_new = pca_approx(A, b, d_new)
         end
+        println(size(A_new))
 
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)

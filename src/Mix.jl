@@ -17,13 +17,12 @@ function fourier_approx(A_old, b_old, d_to_reduce, d_old)
         p_polyhedra = polyhedron(h_polyhedra, CDDLib.Library())
         reduced = Polyhedra.eliminate(p_polyhedra, FourierMotzkin())
         h_lazy = LazySets.HPolytope(reduced)
-        A, b = remove_redundant(constraints_list(h_lazy))
-        # A_new, b_new = tosimplehrep(h_lazy)
+        #A_new, b_new = tosimplehrep(h_lazy)
         #A, b = overapprox(A_old, b_old, A_new, b_new, d_old - i)
+
+        A, b = remove_redundant(constraints_list(h_lazy))
         #A, b = overapprox4(A_new, b_new, d_old - i)
-        
     end
-    println(size(A))
     return A, b
 end
 
@@ -36,7 +35,6 @@ function block_approx(A, b, d_new, d_old)
     h_lazy = LazySets.HPolytope(reduced)
     A_new, b_new = tosimplehrep(h_lazy)
     A_new, b_new = overapprox2(A_new, b_new, d_new)
-    println(size(A_new))
     return A_new, b_new
 end
 
@@ -86,7 +84,6 @@ function overapprox3(A_new, b_new, new_dim)
             b = vcat(b, b_new[i])
         end
     end
-    println(b)
     return A, b
 end
 
