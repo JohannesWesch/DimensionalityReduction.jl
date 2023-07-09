@@ -987,9 +987,9 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[deps.MathOptInterface]]
 deps = ["BenchmarkTools", "CodecBzip2", "CodecZlib", "DataStructures", "ForwardDiff", "JSON", "LinearAlgebra", "MutableArithmetics", "NaNMath", "OrderedCollections", "PrecompileTools", "Printf", "SparseArrays", "SpecialFunctions", "Test", "Unicode"]
-git-tree-sha1 = "19a3636968e802918f8891d729c74bd64dff6d00"
+git-tree-sha1 = "5c5cd501ae1d76d3ccd7c7e6b4325a15dde7f31c"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
-version = "1.17.1"
+version = "1.18.0"
 
 [[deps.MathematicalSystems]]
 deps = ["Espresso", "InteractiveUtils", "LinearAlgebra", "MacroTools", "MultivariatePolynomials", "RecipesBase", "SparseArrays"]

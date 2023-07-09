@@ -35,7 +35,7 @@ end
 function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
     weights = get_w(onnx_input, box_constraints)
     U, Σ, Vᵀ, d_min = decompose(weights)
-    println(d_min)
+    println("Minimal Dimension: ", d_min)
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
     W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min)
     update_network(onnx_input, onnx_output,  W₁)
