@@ -15,7 +15,6 @@ function refine(onnx_output, lower_bounds, upper_bounds, A_new, b_new, out, resu
         if (result[1] == "safe")
             break
         end
-        display(cex)
     end
     return result[1]
 end

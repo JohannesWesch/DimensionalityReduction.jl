@@ -34,7 +34,7 @@ function block_approx(A, b, d_new, d_old)
     reduced = Polyhedra.eliminate(p_polyhedra, var, BlockElimination())
     h_lazy = LazySets.HPolytope(reduced)
     A_new, b_new = tosimplehrep(h_lazy)
-    A_new, b_new = overapprox2(A_new, b_new, d_new)
+    A_new, b_new = overapprox(A, b, A_new, b_new, new_dim)
     return A_new, b_new
 end
 

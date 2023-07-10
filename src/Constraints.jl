@@ -1,10 +1,12 @@
 using VNNLib
 
-global read_buffer = "read_buffer.vnnlib"
-
 function get_box_constraints(vnnlib_file)
-    convert_vnnlib(vnnlib_file, read_buffer)
-    f, n_input, n_output = get_ast(read_buffer)
+
+    s = get_input_constraints(vnnlib_file)
+    path, f = mktemp("benchmarks/buffer"; cleanup=true)
+    write(f, s)
+    close(f)
+    f, n_input, n_output = get_ast(path)
     global b = []
     
     for (bounds, _, _, _) in f
@@ -56,13 +58,6 @@ function get_A_b_from_box_alternating(box_constraints)
     end
 
     return A, b
-end
-
-function convert_vnnlib(vnnlib_file, vnnlib_file_converted)
-    s = get_input_constraints(vnnlib_file)
-    f = open(vnnlib_file_converted, "w+")
-    write(f, s)
-    close(f)
 end
 
 function get_input_constraints(vnnlib_file)
