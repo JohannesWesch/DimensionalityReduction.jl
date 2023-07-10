@@ -15,11 +15,11 @@ function remove_redundant(constraints)
         Ar = A[non_redundant_indices, :]
         br = b[non_redundant_indices]
         @assert br[i] == b[j]
-        br[i] += 1.8
+        br[i] += 1
         lp = linprog(-α, Ar, br, backend)
        
         objval = -lp.objval
-        if objval <= b[j] + 1.8
+        if objval <= b[j] + 1
             # the constraint is redundant
             non_redundant_indices = setdiff(non_redundant_indices, j)
         else

@@ -62,9 +62,7 @@ function approximate(A, new_input_dim, V, bounds)
 end
 
 function approximate_direction(V, bounds, direction)
-
     V = direction' * V
-
     V⁺ = max.(0, V)
     V⁻ = min.(0, V)
 

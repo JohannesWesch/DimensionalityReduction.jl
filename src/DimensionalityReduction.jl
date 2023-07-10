@@ -74,8 +74,6 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
         elseif method == 5
             A_new1, b_new1 = approximate_support_function(A, b, d_new)
             A_new, b_new = approximate(A, d_new, W₂, box_constraints)
-            display(A_new1)
-            display(A_new)
             display(b_new1)
             display(b_new)
         end
