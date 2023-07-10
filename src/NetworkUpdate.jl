@@ -52,17 +52,17 @@ def get_num_inputs_outputs(model):
 
     return num_inputs, num_outputs
 
-def update_network(onnx_input_filename, onnx_output_filename, new_weights):
+def update_network(onnx_input_filename, onnx_output_filename, new_weights, first_matrix):
     # load network
     model = onnx.load(onnx_input_filename)
 
     # weight update
-    name = model.graph.initializer[0].name
+    name = model.graph.initializer[first_matrix].name
     new_weights = new_weights.astype(np.single)
     tensor = onnx.numpy_helper.from_array(new_weights)
 
-    model.graph.initializer[0].CopyFrom(tensor)
-    model.graph.initializer[0].name = name
+    model.graph.initializer[first_matrix].CopyFrom(tensor)
+    model.graph.initializer[first_matrix].name = name
 
     new_input_dim = new_weights.shape[1]
 
@@ -77,10 +77,10 @@ def update_network(onnx_input_filename, onnx_output_filename, new_weights):
     onnx.save(model, onnx_output_filename)
     return
 
-def get_w(onnx_input, box_constraints):
+def get_w(onnx_input, box_constraints, first_matrix):
     model = onnx.load(onnx_input)
-
-    init = model.graph.initializer[0] # get first weight matrix
+    old_input_dim, _ = get_num_inputs_outputs(model)
+    init = model.graph.initializer[first_matrix] # get first weight matrix
     w = onnx.numpy_helper.to_array(init)
     w = remove_zero_activation_weights(w, box_constraints)
     w = np.array(w)

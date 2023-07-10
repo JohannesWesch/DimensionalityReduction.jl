@@ -1,5 +1,6 @@
 using JuMP, Gurobi
 using Base.Threads
+using LinearAlgebra
 
 # use the bounds for the n-r dimensions that we want to get rid of
 # and subtract that from b
@@ -44,4 +45,29 @@ function approximate_support_function(A, b, new_input_dim)
         b_new[i] = s
     end
     return A_new, b_new
+end
+
+function approximate(A, new_input_dim, V, bounds)
+    j = size(A, 1)
+    A_new = A[:, 1:new_input_dim]
+    b_new = zeros(j,)
+
+    for i in 1:j #Threads.@threads 
+        d = A[i, 1:end]
+        d[new_input_dim + 1:end] .= 0.0
+        s = approximate_direction(V, bounds, d)
+        b_new[i] = s
+    end
+    return A_new, b_new
+end
+
+function approximate_direction(V, bounds, direction)
+
+    V = direction' * V
+
+    V⁺ = max.(0, V)
+    V⁻ = min.(0, V)
+
+    s = V⁺ * bounds[:,2] +  V⁻ * bounds[:,1]
+    return s[1]
 end
