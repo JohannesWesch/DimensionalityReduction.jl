@@ -6,7 +6,8 @@ function decompose(w)
 
     F = svd(w, full=true)
     U = F.U
-    S = round(F.S)
+    F.S[abs.(F.S) .< 0.00001] .= 0
+    S = F.S
     Vᵀ = F.Vt
 
     filter!(x->x≠0.0,S)
@@ -17,9 +18,4 @@ function decompose(w)
     dₙ = size(S, 1)
 
     return U, Σ, Vᵀ, dₙ
-end
-
-function round(M)
-    M[abs.(M) .< 0.00001] .= 0
-    return M
 end

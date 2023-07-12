@@ -103,10 +103,10 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 		)
 		print(f"[NNENUM] Found counter-example stars: {len(result.stars)}")
 		sys.stdout.flush()
-		return (result.result_str, result.total_stars, cex)
+		return (result.result_str, result.total_stars, cex, result.total_secs)
 	else:
 		sys.stdout.flush()
-		return (result.result_str, result.total_stars, None)
+		return (result.result_str, result.total_stars, None, result.total_secs)
 """
 		global run_nnenum = py"run_nnenum"
 end

@@ -2,7 +2,7 @@ module DimensionalityReduction
 
 export reduce
 
-using PyCall
+using TimerOutputs
 include("Constraints.jl")
 include("Approximation.jl")
 include("Exact.jl")
@@ -16,17 +16,19 @@ include("PCA.jl")
 include("Refinement.jl")
 import .NNEnum: run_nnenum
 
+const to = TimerOutput()
+
 function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
     F = lu(Vᵀ, NoPivot())
     W₁ = U * Σ
     W₂ = Vᵀ
     if fact == 0
-        W₁ = round(U * Σ * F.L)
+        W₁ = round_matrix(U * Σ * F.L)
         W₂ = F.U
     elseif fact == 1
         P = get_permutation(d_min, d_old)
-        W₁ = round(U * Σ * F.L * P)
-        W₂ = round(P * F.U)
+        W₁ = round_matrix(U * Σ * F.L * P)
+        W₂ = round_matrix(P * F.U)
     elseif fact == 2
         #do nothing
     end
@@ -58,24 +60,17 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
     if reduce
         W₂, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
         A, b = get_A_b_from_box_alternating(box_constraints)
-        A = round(A * inv(W₂))
+        A = round_matrix(A * inv(W₂))
         new_constraints = exact_box(W₂, box_constraints)
 
-        if method == 0
-            A_new, b_new = fourier(A, b, d_to_reduce)
-        elseif method == 1
-            A_new, b_new = block(A, b, d_new, d_old)
-        elseif method == 2
-            A_new, b_new = fourier_approx(A, b, d_to_reduce, d_old)
-        elseif method == 3
-            A_new, b_new = block_approx(A, b, d_new, d_old)
-        elseif method == 4
-            A_new, b_new = approximate_support_function(A, b, d_new)
-        elseif method == 5
-            A_new1, b_new1 = approximate_support_function(A, b, d_new)
-            A_new, b_new = approximate(A, d_new, W₂, box_constraints)
-            display(b_new1)
-            display(b_new)
+        @timeit to "algorithm" begin
+            if method == 0
+                A_new, b_new = fourier(A, b, d_to_reduce)
+            elseif method == 1
+                A_new, b_new = block(A, b, d_new, d_old)
+            elseif method == 2
+                A_new, b_new = approximate(A, d_new, W₂, box_constraints)
+            end
         end
         println(size(A_new))
 
@@ -102,7 +97,8 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
             run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
         end
     end
-    return outputstr
+    return (outputstr, d_new, result[2], round(result[4], digits=2),
+    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=3))
 end
 
 end # module DimensionalityReduction

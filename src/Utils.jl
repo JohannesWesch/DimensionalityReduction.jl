@@ -51,7 +51,7 @@ function create_output_matrix(vnnlib, n_output)
     return disjunctions
 end
 
-function round(M)
+function round_matrix(M)
     M[abs.(M) .< 0.00001] .= 0
     return M
 end

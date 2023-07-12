@@ -63,6 +63,7 @@ end
 
 function approximate_direction(V, bounds, direction)
     V = direction' * V
+    V[abs.(V) .< 0.001] .= 0.0 #rounding errors ocurred
     V⁺ = max.(0, V)
     V⁻ = min.(0, V)
 
