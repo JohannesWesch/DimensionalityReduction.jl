@@ -48,7 +48,7 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, fa
     return W₂, d_new
 end
 
-function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0,
+function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_to_reduce=0,
      vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
     outputstr = "didn't run nnenum"
     to = TimerOutput()
@@ -56,7 +56,7 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
 
-    if reduce
+    if doreduction
         W₂, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
         A, b = get_A_b_from_box_alternating(box_constraints)
         A = round_matrix(A * inv(W₂))
@@ -95,16 +95,10 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
             out = create_output_matrix(vnnlib_input, output_dim)
             run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
         end
+        return
     end
     return (outputstr, d_new, result[2], round(result[4], digits=2),
-    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=2))
+    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=2), size(A_new, 1))
 end
 
 end # module DimensionalityReduction
-
-#print(result[3])
-#print(A_new * result[3][1, :,1] - b_new)
-#print(maximum(A_new * result[3][1, :,1] - b_new))
-#print(maximum(A₁* (inv(O) * result[3][1, :,1]) - b_new))
-#run_nnenum(onnx_output, new_constraints[1:new_input_dim, 1],
-#new_constraints[1:new_input_dim, 2], zeros((0,new_input_dim)), zeros((0,0)), out)
