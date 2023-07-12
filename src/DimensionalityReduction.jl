@@ -16,8 +16,6 @@ include("PCA.jl")
 include("Refinement.jl")
 import .NNEnum: run_nnenum
 
-const to = TimerOutput()
-
 function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
     F = lu(Vᵀ, NoPivot())
     W₁ = U * Σ
@@ -53,6 +51,7 @@ end
 function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_reduce=0,
      vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
     outputstr = "didn't run nnenum"
+    to = TimerOutput()
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
@@ -98,7 +97,7 @@ function reduce(onnx_input, vnnlib_input, output; reduce=true, method=0, d_to_re
         end
     end
     return (outputstr, d_new, result[2], round(result[4], digits=2),
-    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=3))
+    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=2))
 end
 
 end # module DimensionalityReduction
