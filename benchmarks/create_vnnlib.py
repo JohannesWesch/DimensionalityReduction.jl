@@ -130,19 +130,19 @@ if __name__ == '__main__':
         for i in range(num_images):
 
             # input dim 64
-            #image, label = convert_tensor(images[i]), labels[i]
+            image, label = convert_tensor(images[i]), labels[i]
 
             #input dim 16
-            image, label = convert_tensor(scaled[i]), labels[i]
+            #image, label = convert_tensor(scaled[i]), labels[i]
 
 
             input_bounds = create_input_bounds(image, eps)
 
             # input dim 16
-            spec_path = f"benchmarks/digits/dim16/prop_{i}_{eps:.2f}.vnnlib"
+            #spec_path = f"benchmarks/digits/dim16/prop_{i}_{eps:.2f}.vnnlib"
 
             # input dim 64
-            #spec_path = f"benchmarks/digits/dim64/prop_{i}_{eps:.2f}.vnnlib"
+            spec_path = f"benchmarks/digits/dim64/prop_{i}_{eps:.2f}.vnnlib"
 
             save_vnnlib(input_bounds, label, spec_path)
 

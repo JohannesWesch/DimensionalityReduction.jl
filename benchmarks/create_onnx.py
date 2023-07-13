@@ -15,21 +15,21 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters
 #input-dim 16
-input_size = 16
-hidden_size1 = 8
-hidden_size2 = 64
+#input_size = 16
+#hidden_size1 = 8
+#hidden_size2 = 64
 
 #input-dim 64
-#input_size = 64
-#hidden_size1 = 32
-#hidden_size2 = 128
+input_size = 64
+hidden_size1 = 32
+hidden_size2 = 128
 
 
 num_classes = 10
 num_epochs = 2
 batch_size = 32
-learning_rate = 0.01
-onnx_file = 'benchmarks/digits/digit-net_16x4.onnx'
+learning_rate = 0.001
+onnx_file = 'benchmarks/digits/digit-net_64x6.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()
@@ -44,10 +44,10 @@ target = sklearn_data.target
 
 # Convert the NumPy arrays to PyTorch tensors
 #input dim 16
-data_tensor = torch.tensor(scaled, dtype=torch.float32)
+#data_tensor = torch.tensor(scaled, dtype=torch.float32)
 
 #input dim 64
-#data_tensor = torch.tensor(data, dtype=torch.float32)
+data_tensor = torch.tensor(data, dtype=torch.float32)
 
 target_tensor = torch.tensor(target, dtype=torch.long)
 
@@ -130,12 +130,52 @@ class NeuralNet4(nn.Module):
         out = self.l5(out)
         # no activation and no softmax at the end
         return out
+    
+class NeuralNet6(nn.Module):
+    def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
+        super(NeuralNet6, self).__init__()
+        self.input_size = input_size
+        self.l0 = nn.Flatten()
+        self.l1 = nn.Linear(input_size, hidden_size1)
+        self.relu1 = nn.ReLU()
+        self.l2 = nn.Linear(hidden_size1, hidden_size2)
+        self.relu2 = nn.ReLU()
+        self.l3 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu3 = nn.ReLU()
+        self.l4 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu4 = nn.ReLU()
+        self.l5 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu5 = nn.ReLU()
+        self.l6 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu6 = nn.ReLU()
+        self.l7 = nn.Linear(hidden_size2, num_classes)
+
+    def forward(self, x):
+        out = self.l0(x)
+        out = self.l1(out)
+        out = self.relu1(out)
+        out = self.l2(out)
+        out = self.relu2(out)
+        out = self.l3(out)
+        out = self.relu3(out)
+        out = self.l4(out)
+        out = self.relu4(out)
+        out = self.l5(out)
+        out = self.relu5(out)
+        out = self.l6(out)
+        out = self.relu6(out)
+        out = self.l7(out)
+        # no activation and no softmax at the end
+        return out
 
 # neural net with 2 hidden layers
 #model = NeuralNet2(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # neural net with 4 hidden layers
-model = NeuralNet4(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+#model = NeuralNet4(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+
+# neural net with 6 hidden layers
+model = NeuralNet6(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
