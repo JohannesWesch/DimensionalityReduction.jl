@@ -114,7 +114,7 @@ def create_instances_csv(num_props: int = 15, path: str = "mnistfc_instances.csv
 if __name__ == '__main__':
 
     num_images = 2
-    epsilons = [0.45, 0.5, 0.55]
+    epsilons = [0.01]
 
     dig_data = datasets.load_digits()
     images = dig_data.images[1:25]
@@ -132,13 +132,13 @@ if __name__ == '__main__':
             # input dim 64
             #image, label = convert_tensor(images[i]), labels[i]
 
-            #input scaled
+            #input dim 16
             image, label = convert_tensor(scaled[i]), labels[i]
 
 
             input_bounds = create_input_bounds(image, eps)
 
-            # scaled
+            # input dim 16
             spec_path = f"benchmarks/digits/dim16/prop_{i}_{eps:.2f}.vnnlib"
 
             # input dim 64

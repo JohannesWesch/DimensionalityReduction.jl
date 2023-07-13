@@ -28,7 +28,7 @@ hidden_size2 = 64
 num_classes = 10
 num_epochs = 2
 batch_size = 32
-learning_rate = 0.001
+learning_rate = 0.01
 onnx_file = 'benchmarks/digits/digit-net_16x4.onnx'
 
 # Load the dataset
