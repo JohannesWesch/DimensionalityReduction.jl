@@ -87,15 +87,57 @@ function fourier_block(onnx_input, vnnlib_input, output,algorithm_name, nn, eps,
     p
 end
 
+function block_elimination(onnx_input, output; doreduction=true, method=0,
+    vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
+    
+    dims5 = [0,1,2,3,4,5,6,7,8,9,10,11] 
+    dims6 = [0,1,2,3,4,5,6,7,8,9,10] 
+    dims7 = [0,1,2,3,4,5,6,7,8,9] 
+
+    constraints5 = zeros(12,)
+    constraints6 = zeros(12,)
+    constraints7 = zeros(12,)
+
+    for (i, dim) in enumerate(dims5)
+        result = reduce(onnx_input, "benchmarks/digits/dim16/prop_6_0.01.vnnlib", output; doreduction, method=1, d_to_reduce=dim,
+        vnnlib, nnenum, factorization=1, dorefinement)
+        constraints5[i] = result[6]
+    end
+
+    for (i, dim) in enumerate(dims6)
+        result = reduce(onnx_input, "benchmarks/digits/dim16/prop_3_0.01.vnnlib", output; doreduction, method=1, d_to_reduce=dim,
+        vnnlib, nnenum, factorization=1, dorefinement)
+        constraints6[i] = result[6]
+    end
+
+    for (i, dim) in enumerate(dims7)
+        result = reduce(onnx_input, "benchmarks/digits/dim16/prop_5_0.01.vnnlib", output; doreduction, method=1, d_to_reduce=dim,
+        vnnlib, nnenum, factorization=1, dorefinement)
+        constraints7[i] = result[6]
+    end
+
+    p = plot([
+        #bar(name=algorithm, x=dims, y=algorithm, marker_color="indianred"),
+        bar(name="Minimal Dimension 5", x=dims5, y=constraints5, marker_color="indianred"),
+        bar(name="Minimal Dimension 6", x=dims6, y=constraints6, marker_color="lightsalmon"),
+        bar(name="Minimal Dimension 7", x=dims7, y=constraints7, marker_color="lightseagreen"),
+        #bar(name="NNEnum", x=dims, y=nnenum_seconds, marker_color="lightseagreen")
+    ], Layout(title_text="Neural Network: 16x8x64x10 <br>Epsilon: 0.01 <br>Algorithm: Block Elimination"))
+    relayout!(p, barmode="group")
+    p
+end
+
 nn = "64x32x128x128x128x128x128x10"
 algorithm = "Block Elimination"
 #nn = "16x8x64x64x64x10"
 eps = "0.60"
 dims = [0, 1, 2, 3]
 
-stars_seconds("benchmarks/digits/digit-net_64x6.onnx", 
+#=stars_seconds("benchmarks/digits/digit-net_64x6.onnx", 
 "benchmarks/digits/dim64/prop_0_0.60.vnnlib",
-"benchmarks/digits_reduced", nn, eps, dims, method=2, nnenum=true)
+"benchmarks/digits_reduced", nn, eps, dims, method=2, nnenum=true)=#
+
+block_elimination("benchmarks/digits/digit-net_16x2.onnx", "benchmarks/digits_reduced", nnenum = true)
 
 #=algorithm_constraints_nnenum("benchmarks/digits/digit-net_16x4.onnx", 
 "benchmarks/digits/dim16/prop_0_0.20.vnnlib",

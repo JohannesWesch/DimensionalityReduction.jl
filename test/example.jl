@@ -16,6 +16,16 @@ import .DimensionalityReduction: reduce
         "benchmarks/digits/dim64/prop_0_0.60.vnnlib",
         "benchmarks/digits_reduced", method=4, d_to_reduce=1, nnenum=true)=#
 
-reduce("benchmarks/digits/digit-net_16x4.onnx", 
-"benchmarks/digits/dim16/prop_0_0.01.vnnlib",
-"benchmarks/digits_reduced", method=1, d_to_reduce=5, nnenum=true, factorization=1)
+reduce("benchmarks/digits/digit-net_16x2.onnx", 
+"benchmarks/digits/dim16/prop_12_0.01.vnnlib",
+"benchmarks/digits_reduced", method=1, d_to_reduce=0, nnenum=true, factorization=1)
+
+#5
+#"benchmarks/digits/dim16/prop_6_0.01.vnnlib"
+
+#6
+#"benchmarks/digits/dim16/prop_3_0.01.vnnlib"
+
+#7
+#"benchmarks/digits/dim16/prop_5_0.01.vnnlib"
+
