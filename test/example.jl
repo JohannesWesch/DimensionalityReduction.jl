@@ -17,5 +17,5 @@ import .DimensionalityReduction: reduce
         "benchmarks/digits_reduced", method=4, d_to_reduce=1, nnenum=true)=#
 
 reduce("benchmarks/digits/digit-net_16x4.onnx", 
-"benchmarks/digits/dim16/prop_0_0.20.vnnlib",
-"benchmarks/digits_reduced", method=1, d_to_reduce=8, nnenum=true, factorization=0)
+"benchmarks/digits/dim16/prop_0_0.01.vnnlib",
+"benchmarks/digits_reduced", method=1, d_to_reduce=5, nnenum=true, factorization=1)

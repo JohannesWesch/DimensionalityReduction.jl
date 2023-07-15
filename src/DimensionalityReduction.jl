@@ -16,7 +16,7 @@ include("PCA.jl")
 include("Refinement.jl")
 import .NNEnum: run_nnenum
 
-function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
+function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min, d_to_reduce)
     F = lu(Vᵀ, NoPivot())
     W₁ = U * Σ
     W₂ = Vᵀ
@@ -24,9 +24,9 @@ function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min)
         W₁ = round_matrix(U * Σ * F.L)
         W₂ = F.U
     elseif fact == 1
-        P = get_permutation(d_min, d_old)
+        P = get_individual_permutation(d_old, d_min, d_to_reduce)
         W₁ = round_matrix(U * Σ * F.L * P)
-        W₂ = round_matrix(P * F.U)
+        W₂ = round_matrix(transpose(P) * F.U)
     elseif fact == 2
         #do nothing
     end
@@ -43,7 +43,7 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, fa
     U, Σ, Vᵀ, d_min = decompose(weights)
     println("Minimal Dimension: ", d_min)
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
-    W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min)
+    W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min, d_to_reduce)
     update_network(onnx_input, onnx_output, W₁, first_matrix)
     return W₂, d_new
 end
