@@ -194,11 +194,15 @@ nn = "64x8x64x64x64x64x64x10"
 algorithm = "Block Elimination"
 #nn = "16x8x64x64x64x10"
 eps = "0.01"
-dims = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+dims = [0, 1, 2]
 
-stars_seconds("benchmarks/digits/digit-net_64x6.onnx", 
+stars_seconds("benchmarks/digits/digit-net_64x32x128x128x128x10.onnx", 
+"benchmarks/digits/dim64/prop_0_0.20.vnnlib",
+"benchmarks/digits_reduced", nn, eps, dims, method=2, nnenum=true)
+
+#=stars_seconds("benchmarks/digits/digit-net_64x6.onnx", 
 "benchmarks/digits/dim64/prop_0_0.01.vnnlib",
-"benchmarks/digits_reduced", nn, eps, dims, method=1, nnenum=true, factorization = 1)
+"benchmarks/digits_reduced", nn, eps, dims, method=1, nnenum=true, factorization = 1)=#
 
 #block_elimination("benchmarks/digits/digit-net_16x2.onnx", "benchmarks/digits_reduced", nnenum = true)
 

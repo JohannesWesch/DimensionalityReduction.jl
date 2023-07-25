@@ -52,6 +52,7 @@ def run_nnenum(model, lb, ub, A_input, b_input, disjunction):
 	Settings.NUM_PROCESSES = 0
 	Settings.COMPRESS_INIT_BOX = True
 	Settings.BRANCH_MODE = Settings.BRANCH_OVERAPPROX
+	#Settings.BRANCH_MODE = Settings.BRANCH_EXACT
 	Settings.TRY_QUICK_OVERAPPROX = False
 
 	Settings.OVERAPPROX_MIN_GEN_LIMIT = np.inf
