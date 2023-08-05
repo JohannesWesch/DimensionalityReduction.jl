@@ -12,7 +12,7 @@ import .DimensionalityReduction: reduce
 
 reduce("benchmarks/digits/digit-net_64x6.onnx", 
         "benchmarks/digits/dim64/prop_9_0.01.vnnlib",
-        "benchmarks/digits_reduced", method=1, d_to_reduce=1, nnenum=true, factorization=1)
+        "benchmarks/digits_reduced", method=2, d_to_reduce=1, nnenum=true, factorization=1, vnnlib=true)
 
 #6
 #"benchmarks/digits/dim64/prop_6_0.01.vnnlib"

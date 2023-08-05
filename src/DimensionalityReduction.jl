@@ -86,7 +86,7 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
     
         if vnnlib
             println("writing vnnlib-file")
-            create_vnnlib(A_new, b_new, new_input_dim, output_dim, vnnlib_input, vnnlib_output)
+            create_vnnlib(A_new, b_new, d_new, output_dim, vnnlib_input, vnnlib_output)
         end
 
 
