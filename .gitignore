@@ -25,6 +25,7 @@ Manifest.toml
 
 *.vnnlib
 *.onnx
+*.svg
 
 !digit-net_16x2.onnx
 !digit-net_16x4.onnx

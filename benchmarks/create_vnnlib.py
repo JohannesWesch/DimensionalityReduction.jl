@@ -113,8 +113,8 @@ def create_instances_csv(num_props: int = 15, path: str = "mnistfc_instances.csv
 
 if __name__ == '__main__':
 
-    num_images = 2
-    epsilons = [0.01]
+    num_images = 1
+    epsilons = [0.03, 0.02]
 
     dig_data = datasets.load_digits()
     images = dig_data.images[1:25]

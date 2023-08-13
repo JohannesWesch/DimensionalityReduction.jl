@@ -20,8 +20,15 @@ function stars_seconds(onnx_input, vnnlib_input, output, nn, eps, dims; doreduct
     p = plot([
         bar(name="Stars", x=dims, y=stars, marker_color="indianred"),
         bar(name="Seconds", x=dims, y=seconds, marker_color="lightsalmon")
-    ], Layout(title_text="Neural Network: " * nn * "<br>Epsilon: " * eps))
+    ], Layout(legend=attr(
+        x=1,
+        y=1.02,
+        yanchor="bottom",
+        xanchor="right",
+        orientation="h"
+    ), title_text="Neural Network: " * nn * "<br>Epsilon: " * eps))
     relayout!(p, barmode="group")
+    savefig(p, "plot.svg")
     p
 end
 
@@ -217,3 +224,6 @@ stars_seconds("benchmarks/digits/digit-net_64x32x128x128x128x10.onnx",
 #=fourier_block("benchmarks/digits/digit-net_16x4.onnx", 
 "benchmarks/digits/dim16/prop_0_0.20.vnnlib",
 "benchmarks/digits_reduced",algorithm, nn, eps, dims, nnenum=true)=#
+
+# to save plots to svg format
+#savefig(p, "plot.svg")

@@ -70,3 +70,24 @@ function approximate_direction(V, bounds, direction)
     s = V⁺ * bounds[:,2] +  V⁻ * bounds[:,1]
     return s[1]
 end
+
+function approximate_unitvector(A, new_input_dim, V, bounds)
+    j = size(A, 2)
+    A_new = zeros(2*new_input_dim, new_input_dim)
+    b_new = zeros(2*j,)
+
+    for i in 1:new_input_dim #Threads.@threads 
+        d₁ = zeros(j,)
+        d₂ = zeros(j,)
+        d₁[i] = 1.0
+        d₂[i] = -1.0
+        
+        s₁ = approximate_direction(V, bounds, d₁)
+        s₂ = approximate_direction(V, bounds, d₂)
+        A_new[2*i - 1, :] = d₁[1:new_input_dim]
+        A_new[2*i, :] = d₂[1:new_input_dim]
+        b_new[2*i - 1] = s₁
+        b_new[2*i] = s₂
+    end
+    return A_new, b_new
+end
