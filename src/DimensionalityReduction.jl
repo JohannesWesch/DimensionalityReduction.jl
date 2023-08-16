@@ -28,7 +28,11 @@ function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min, d_to_reduce)
         W₁ = round_matrix(U * Σ * F.L * P)
         W₂ = round_matrix(transpose(P) * F.U)
     elseif fact == 2
-        #do nothing
+        P = get_individual_permutation_fourier(d_old, d_min, d_to_reduce)
+        W₁ = round_matrix(U * Σ * F.L * P)
+        W₂ = round_matrix(transpose(P) * F.U)
+    elseif fact == 3
+        # do nothing
     end
     return W₁[:, 1:d_new], W₂
 end

@@ -105,3 +105,27 @@ function get_individual_permutation(d_old, d_min, d_to_reduce)
     end
     return P
 end
+
+
+function get_individual_permutation_fourier(d_old, d_min, d_to_reduce)
+    rest = d_old - d_min - d_to_reduce
+    P = zeros(d_old, d_old)
+    for i in 1:d_min
+        P[i, i] = 1
+    end
+    for i in d_min + 1:d_min + d_to_reduce
+        for j in d_min+rest+1:d_old
+            if(i+j == d_old + d_min + 1)
+                P[i, j] = 1
+            end
+        end
+    end
+    for i in d_min + d_to_reduce+1:d_old
+        for j in d_min+1:d_min+rest
+            if(i == j + d_to_reduce)
+                P[i, j] = 1
+            end
+        end
+    end
+    return P
+end
