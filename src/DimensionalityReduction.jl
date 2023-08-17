@@ -17,20 +17,20 @@ include("Refinement.jl")
 import .NNEnum: run_nnenum
 
 function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min, d_to_reduce)
-    F = lu(Vᵀ, NoPivot())
+    F = lu(Vᵀ)
     W₁ = U * Σ
     W₂ = Vᵀ
     if fact == 0
         W₁ = round_matrix(U * Σ * F.L)
-        W₂ = F.U
+        W₂ = F.U * F.P
     elseif fact == 1
         P = get_individual_permutation(d_old, d_min, d_to_reduce)
         W₁ = round_matrix(U * Σ * F.L * P)
-        W₂ = round_matrix(transpose(P) * F.U)
+        W₂ = round_matrix(transpose(P) * F.U * F.P)
     elseif fact == 2
         P = get_individual_permutation_fourier(d_old, d_min, d_to_reduce)
         W₁ = round_matrix(U * Σ * F.L * P)
-        W₂ = round_matrix(transpose(P) * F.U)
+        W₂ = round_matrix(transpose(P) * F.U * F.P)
     elseif fact == 3
         # do nothing
     end
