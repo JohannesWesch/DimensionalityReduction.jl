@@ -49,7 +49,7 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, fa
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
     W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min, d_to_reduce)
     update_network(onnx_input, onnx_output, W₁, first_matrix)
-    return W₂, d_new
+    return W₂, d_new, d_min
 end
 
 function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_to_reduce=0,
@@ -61,7 +61,7 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
 
     if doreduction
-        W₂, d_new = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
+        W₂, d_new, d_min = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
         A, b = get_A_b_from_box_alternating(box_constraints)
         A = round_matrix(A * inv(W₂))
         new_constraints = exact_box(W₂, box_constraints)
@@ -78,7 +78,7 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
             end
         end
         println(size(A_new))
-
+        result = zeros(4,)
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)
             result = run_nnenum(onnx_output, new_constraints[1:d_new, 1], new_constraints[1:d_new, 2], A_new, b_new, out)
@@ -104,7 +104,7 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
         return
     end
     return (outputstr, d_new, result[2], round(result[4], digits=2),
-    round(TimerOutputs.time(to["algorithm"]) * 0.000000001, digits=2), size(A_new, 1))
+    round(TimerOutputs.time(to["algorithm"])* 0.000001, digits=2), size(A_new, 1), d_min) #* 0.000000001
 end
 
 end # module DimensionalityReduction

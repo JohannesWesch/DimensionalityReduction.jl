@@ -3,7 +3,7 @@ import .DimensionalityReduction: reduce
 
 #normal example
 reduce("benchmarks/digits/digit-net_64x4.onnx", 
-        "benchmarks/digits/dim64/prop_0_0.30.vnnlib",
+        "benchmarks/digits/dim64/prop_6_0.01.vnnlib",
         "benchmarks/digits_reduced", method=2, d_to_reduce=7, nnenum=true, factorization=0)
 
 #=reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 

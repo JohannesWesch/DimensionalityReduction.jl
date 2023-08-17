@@ -26,15 +26,21 @@ function block(onnx_input, output; doreduction=true, method=0,
     p = plot([
         bar(name="Without Permutation", x=dims, y=constraints, marker_color="indianred"), #, text=constraints, textposition="outside"
         bar(name="With Permutation", x=dims_permute, y=constraints_permute, marker_color="lightsalmon"), #, text=constraints_permute, textposition="outside"
-    ], Layout(yaxis=attr(title="Constraints"),
-               xaxis=attr(title="Reduced Dimensions") ,
-                 legend=attr(
+    ], Layout(yaxis=attr(title="Constraints", linecolor="black",
+    showgrid=true,
+    gridcolor="lightslategrey",
+    gridwidth=0.1),
+               xaxis=attr(title="Reduced Dimensions", linecolor="black",
+               showgrid=true,
+               gridcolor="lightslategrey",
+               gridwidth=0.1) ,
+    legend=attr(
         x=1,
         y=1.02,
         yanchor="bottom",
         xanchor="right",
         orientation="h"
-    ))) #title_text="Neural Network: 16x8x64x10 <br>Epsilon: 0.01", 
+    ),plot_bgcolor="white")) #title_text="Neural Network: 16x8x64x10 <br>Epsilon: 0.01", 
     relayout!(p, barmode="group")
     savefig(p, "test/plot2.svg")
     p

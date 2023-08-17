@@ -9,15 +9,17 @@ function fourier(onnx_input, output; doreduction=true, method=0,
     dims_permute = [0,1, 2,3] 
 
     constraints = [32, 240, 14280, 50969124]
-    constraints_permute = [32, 86, 1344, 443732]
+    constraints_text = ["32", "240", "14.280", "50.969.124"]
+    constraints_permute = [32, 86, 1344, 443.732]
+    constraints_permute_text = ["32", "86", "1.344", "443.732"]
     #[32, 50, 258, 14416, 51695982] minimal dim5
 
 
-    for (i, dim) in enumerate(dims)
+    #=for (i, dim) in enumerate(dims)
         result = reduce(onnx_input, "benchmarks/digits/dim16/prop_6_0.01.vnnlib", output; doreduction, method=0, d_to_reduce=dim,
         vnnlib, nnenum, factorization=3, dorefinement)
         constraints[i] = result[6]
-    end
+    end=#
 
     #=for (i, dim) in enumerate(dims_permute)
         result = reduce(onnx_input, "benchmarks/digits/dim16/prop_0_5.00.vnnlib", output; doreduction, method=0, d_to_reduce=dim,
@@ -26,17 +28,23 @@ function fourier(onnx_input, output; doreduction=true, method=0,
     end=#
 
     p = plot([
-        bar(name="Without Permutation", x=dims, y=constraints, marker_color="indianred", text=constraints, textposition="outside"),
-        bar(name="With Permutation", x=dims_permute, y=constraints_permute, marker_color="lightsalmon", text=constraints_permute, textposition="outside"),
-    ], Layout(yaxis=attr(type="log", nticks=4, title="Constraints"),
-               xaxis=attr(title="Reduced Dimensions") ,
+        bar(name="Without Permutation", x=dims, y=constraints, marker_color="indianred", text=constraints_text, textposition="outside"),
+        bar(name="With Permutation", x=dims_permute, y=constraints_permute, marker_color="lightsalmon", text=constraints_permute_text, textposition="outside"),
+    ], Layout(yaxis=attr(type="log", nticks=4, title="Constraints",linecolor="black",
+    showgrid=true,
+    gridcolor="lightslategrey",
+    gridwidth=0.1),
+               xaxis=attr(title="Reduced Dimensions",linecolor="black",
+               showgrid=true,
+               gridcolor="lightslategrey",
+               gridwidth=0.1) ,
                  legend=attr(
         x=1,
         y=1.02,
         yanchor="bottom",
         xanchor="right",
         orientation="h"
-    ),)) #title_text="Neural Network: 16x8x64x10 <br>Epsilon: 0.01", 
+    ),plot_bgcolor="white")) #title_text="Neural Network: 16x8x64x10 <br>Epsilon: 0.01", 
     relayout!(p, barmode="group")
     savefig(p, "test/plot1.svg")
     p
