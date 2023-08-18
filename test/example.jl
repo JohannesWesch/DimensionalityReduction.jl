@@ -2,9 +2,9 @@ include("../src/DimensionalityReduction.jl")
 import .DimensionalityReduction: reduce
 
 #normal example
-reduce("benchmarks/digits/digit-net_16x6.onnx", 
-        "benchmarks/digits/dim16/prop_0_0.60.vnnlib",
-        "benchmarks/digits_reduced", method=1, d_to_reduce=0, nnenum=true, factorization=0)
+reduce("benchmarks/digits/digit-net_64x8x64x64x64x10.onnx", 
+        "benchmarks/digits/dim64/prop_5_1.00.vnnlib",
+        "benchmarks/digits_reduced", method=2, d_to_reduce=1, nnenum=true, factorization=3)
 
 #=reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
 "benchmarks/mnistfc/prop_5_0.03.vnnlib",

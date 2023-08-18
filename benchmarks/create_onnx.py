@@ -29,7 +29,7 @@ num_classes = 10
 num_epochs = 2
 batch_size = 32
 learning_rate = 0.001
-onnx_file = 'benchmarks/digits/digit-net_64x8x128x10.onnx'
+onnx_file = 'benchmarks/digits/digit-net_64x8x128xxx10.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()

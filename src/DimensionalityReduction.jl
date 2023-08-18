@@ -39,9 +39,9 @@ end
 
 function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
     first_matrix = 0
-    if (d_old > 700)
-        first_matrix = 1
-    end
+    #if (d_old > 700)
+    #    first_matrix = 1
+    #end
 
     weights = get_w(onnx_input, box_constraints, first_matrix)
     U, Σ, Vᵀ, d_min = decompose(weights)
@@ -99,12 +99,16 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
     else
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)
-            run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
+            result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
         end
         return
     end
-    return (outputstr, d_new, result[2], round(result[4], digits=2),
-    round(TimerOutputs.time(to["algorithm"])* 0.000001, digits=2), size(A_new, 1), d_min) #* 0.000000001
+    safe = 0
+    if result[1] == "safe"
+        safe = 1
+    end
+    return (outputstr, d_new, result[2], round(result[4], digits=4),
+    round(TimerOutputs.time(to["algorithm"])* 0.000001, digits=4), size(A_new, 1), d_min, safe) #* 0.000000001
 end
 
 end # module DimensionalityReduction
