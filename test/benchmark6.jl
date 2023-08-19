@@ -5,8 +5,8 @@ import .DimensionalityReduction: reduce
 function block_elimination(onnx_input, output; doreduction=true, method=0,
     vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
     
-    dims7 = [0,1,2, 4, 5, 6, 7, 8, 9, 10] 
-    dims8 = [0,1,2, 4, 5, 6, 7, 8, 9, 10] 
+    dims7 = [0,1,2,3, 4, 5, 6, 7, 8, 9, 10] 
+    dims8 = [0,1,2,3, 4, 5, 6, 7, 8, 9, 10] 
 
     constraints7 = zeros(11,)
     constraints8 = zeros(11,)

@@ -33,7 +33,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     end
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=186,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_removed[i] = result[4]
         if result[8] == 0
@@ -42,7 +42,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     end
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=186,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_nopermute[i] = result[4]
         if result[8] == 0
