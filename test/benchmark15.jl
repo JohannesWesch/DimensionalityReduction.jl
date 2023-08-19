@@ -5,23 +5,42 @@ import .DimensionalityReduction: reduce
 function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0,
     vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
      
-    epsilons = ["benchmarks/digits/dim196/prop_8_0.001.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.002.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.003.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.004.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.005.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.006.vnnlib",
-                "benchmarks/digits/dim196/prop_8_0.007.vnnlib",
+    epsilons = [
+                "benchmarks/digits/dim196/prop_12_0.002.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.004.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.006.vnnlib",
+               
+                "benchmarks/digits/dim196/prop_12_0.008.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.01.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.012.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.014.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.016.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.018.vnnlib",
+                
+                "benchmarks/digits/dim196/prop_12_0.02.vnnlib",
+               
+                "benchmarks/digits/dim196/prop_12_0.022.vnnlib",
+                "benchmarks/digits/dim196/prop_12_0.024.vnnlib",
+                "benchmarks/digits/dim196/prop_12_0.026.vnnlib",
+                "benchmarks/digits/dim196/prop_12_0.028.vnnlib",
+                "benchmarks/digits/dim196/prop_12_0.03.vnnlib",
     ]
-    epsilons_text = [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007]
+    epsilons_text = [0.002, 0.004, 0.006, 0.008,  0.01, 0.012,  0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028, 0.03]
 
-    runtime = zeros(10,)
-    runtime_removed = zeros(10,)
-    runtime_nopermute = zeros(10,)
-    dummy = zeros(10,)
-    color_vec1 = fill("lightgreen", 10)
-    color_vec2 = fill("lightgreen", 10)
-    color_vec3 = fill("lightgreen", 10)
+    runtime = zeros(25,)
+    runtime_removed = zeros(25,)
+    runtime_nopermute = zeros(25,)
+    dummy = zeros(25,)
+    color_vec1 = fill("lightgreen", 25)
+    color_vec2 = fill("lightgreen", 25)
+    color_vec3 = fill("lightgreen", 25)
 
     for (i, epsilon) in enumerate(epsilons)
         result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=0,
@@ -33,7 +52,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     end
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=186,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_removed[i] = result[4]
         if result[8] == 0
@@ -42,7 +61,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     end
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=186,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_nopermute[i] = result[4]
         if result[8] == 0
@@ -73,7 +92,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     orientation="h"
     ), plot_bgcolor="white"))
     relayout!(p, barmode="group")
-    savefig(p, "test/plot14.svg")
+    savefig(p, "test/plot15.svg")
     p
 end
 

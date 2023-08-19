@@ -27,16 +27,16 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #hidden_size2 = 64
 
 #input-dim 784
-input_size = 784
+input_size = 196
 hidden_size1 = 8
-hidden_size2 = 256
+hidden_size2 = 128
 
 
 num_classes = 10
 num_epochs = 2
 batch_size = 32
 learning_rate = 0.001
-onnx_file = 'benchmarks/digits/digit-net_784x8x256x256x256x10.onnx'
+onnx_file = 'benchmarks/digits/digit-net_196x8x128x128x128x128x128x10.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()
@@ -100,6 +100,17 @@ test_data = torchdatasets.MNIST(
     download=True,
     transform=ToTensor()
 )
+newtraining_data = []
+for img in training_data.data:
+    newtraining_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
+
+training_data.data = torch.tensor(newtraining_data, dtype=torch.float32)
+
+newtest_data = []
+for img in test_data.data:
+    newtest_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
+
+test_data.data = torch.tensor(newtest_data, dtype=torch.float32)
 
 train_loader = DataLoader(training_data, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_data, batch_size=64, shuffle=True)
@@ -196,10 +207,10 @@ class NeuralNet6(nn.Module):
 #model = NeuralNet2(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # neural net with 4 hidden layers
-model = NeuralNet4(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+#model = NeuralNet4(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # neural net with 6 hidden layers
-#model = NeuralNet6(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+model = NeuralNet6(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
