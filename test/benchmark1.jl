@@ -10,7 +10,7 @@ function fourier(onnx_input, output; doreduction=true, method=0,
 
     constraints = [32, 240, 14280, 50969124]
     constraints_text = ["32", "240", "14.280", "50.969.124"]
-    constraints_permute = [32, 86, 1344, 443.732]
+    constraints_permute = [32, 86, 1344, 443732]
     constraints_permute_text = ["32", "86", "1.344", "443.732"]
     #[32, 50, 258, 14416, 51695982] minimal dim5
 

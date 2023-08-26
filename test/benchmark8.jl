@@ -26,9 +26,9 @@ function block_elimination_time(onnx_input, output; doreduction=true, method=0,
 
 
     p = plot([
-        scatter(name="64-7", x=dims764, y=constraints764, marker_color="lightgreen", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
-        scatter(name="64-8", x=dims864, y=constraints864, marker_color="lightskyblue", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
-    ], Layout(yaxis=attr(title="Runtime (ms)", linecolor="black", type="log", nticks=4,
+        scatter(name="64-7", x=dims764, y=constraints764, marker=attr(color="lightgreen", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints7, textposition="outside"
+        scatter(name="64-8", x=dims864, y=constraints864, marker=attr(color="lightskyblue",size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints7, textposition="outside"
+    ], Layout(yaxis=attr(title="Runtime (s)", linecolor="black", type="log", nticks=4,
     showgrid=true,
     gridcolor="lightslategrey",
     gridwidth=0.1),

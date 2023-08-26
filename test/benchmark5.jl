@@ -49,11 +49,11 @@ function block_elimination_time(onnx_input, output; doreduction=true, method=0,
 
 
     p = plot([
-        scatter(name="16-5", x=dims5, y=constraints5, marker_color="lightgoldenrodyellow", mode="markers+lines", line=attr(width=3)), #, text=constraints5, textposition="outside"
-        scatter(name="16-6", x=dims6, y=constraints6, marker_color="lightsalmon", mode="markers+lines", line=attr(width=3)), #, text=constraints6, textposition="outside"
-        scatter(name="16-7", x=dims7, y=constraints7, marker_color="indianred", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
-        scatter(name="64-7", x=dims764, y=constraints764, marker_color="lightgreen", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
-        scatter(name="64-8", x=dims864, y=constraints864, marker_color="lightskyblue", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
+        scatter(name="16-5", x=dims5, y=constraints5, marker=attr(color="rosybrown", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints5, textposition="outside"
+        scatter(name="16-6", x=dims6, y=constraints6, marker=attr(color="lightsalmon", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints6, textposition="outside"
+        scatter(name="16-7", x=dims7, y=constraints7, marker=attr(color="indianred", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints7, textposition="outside"
+        scatter(name="64-7", x=dims764, y=constraints764, marker=attr(color="lightgreen", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints7, textposition="outside"
+        scatter(name="64-8", x=dims864, y=constraints864, marker=attr(color="lightskyblue", size=8), mode="markers+lines", line=attr(width=6)), #, text=constraints7, textposition="outside"
     ], Layout(yaxis=attr(title="Runtime (ms)", linecolor="black", type="log", nticks=5,
     showgrid=true,
     gridcolor="lightslategrey",

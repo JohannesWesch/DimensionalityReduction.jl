@@ -90,10 +90,10 @@ function vnnlib(onnx_input, output; doreduction=true, method=0,
     end
 
     p = plot([
-        scatter(name="Minimal Dimension 5", x=vnnlibx, y=constraints5, marker_color="lightseagreen", mode="markers+lines", line=attr(width=3)), #, text=constraints5, textposition="outside"
-        scatter(name="Minimal Dimension 6", x=vnnlibx, y=constraints6, marker_color="lightgray", mode="markers+lines", line=attr(width=3)), #, text=constraints6, textposition="outside"
-        scatter(name="Minimal Dimension 7", x=vnnlibx, y=constraints7, marker_color="lightcoral", mode="markers+lines", line=attr(width=3)), #, text=constraints7, textposition="outside"
-        scatter(name="Minimal Dimension 8", x=vnnlibx, y=constraints8, marker_color="lightsteelblue", mode="markers+lines", line=attr(width=3)),
+        scatter(name="Minimal Dimension 5", x=vnnlibx, y=constraints5, marker=attr(color="lightseagreen", size=8), mode="markers+lines", line=attr(width=4)), #, text=constraints5, textposition="outside"
+        scatter(name="Minimal Dimension 6", x=vnnlibx, y=constraints6, marker=attr(color="darkgray", size=8), mode="markers+lines", line=attr(width=4)), #, text=constraints6, textposition="outside"
+        scatter(name="Minimal Dimension 7", x=vnnlibx, y=constraints7, marker=attr(color="lightcoral", size=8), mode="markers+lines", line=attr(width=4)), #, text=constraints7, textposition="outside"
+        scatter(name="Minimal Dimension 8", x=vnnlibx, y=constraints8, marker=attr(color="midnightblue", size=8), mode="markers+lines", line=attr(width=4)),
     ], Layout(yaxis=attr(title="Minimal Dimension",
                         linecolor="black",
                         showgrid=true,

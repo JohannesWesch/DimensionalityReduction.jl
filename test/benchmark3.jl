@@ -32,7 +32,7 @@ function block_elimination(onnx_input, output; doreduction=true, method=0,
     end
 
     p = plot([
-        bar(name="Minimal Dimension 5", x=dims5, y=constraints5, marker_color="lightgoldenrodyellow"), #, text=constraints5, textposition="outside"
+        bar(name="Minimal Dimension 5", x=dims5, y=constraints5, marker_color="rosybrown"), #, text=constraints5, textposition="outside"
         bar(name="Minimal Dimension 6", x=dims6, y=constraints6, marker_color="lightsalmon"), #, text=constraints6, textposition="outside"
         bar(name="Minimal Dimension 7", x=dims7, y=constraints7, marker_color="indianred"), #, text=constraints7, textposition="outside"
     ], Layout(yaxis=attr(title="Constraints", linecolor="black",
@@ -55,4 +55,4 @@ function block_elimination(onnx_input, output; doreduction=true, method=0,
     p
 end
 
-block_elimination("benchmarks/digits/digit-net_16x2.onnx", "benchmarks/digits_reduced", nnenum = true)
+block_elimination("benchmarks/digits/digit-net_16x2.onnx", "benchmarks/digits_reduced")
