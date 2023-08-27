@@ -24,13 +24,14 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
 
 
     p = plot([
-        scatter(name="runtime (s)", x=dims, y=runtime, marker_color="blue", mode="markers+lines", line=attr(width=3)), #, text=constraints5, textposition="outside"
+        scatter(name="runtime", x=dims, y=runtime, marker_color="blue", mode="markers+lines", line=attr(width=3), yaxis="y2"), #, text=constraints5, textposition="outside"
         bar(name="safe", x=dims, y=stars, marker_color=color_vec),
-        bar(name="unsafe", x=dims, y=dummy, marker_color="orangered"),
-    ], Layout(yaxis=attr(title="Stars", linecolor="black", nticks=4, type="log",
+        bar(name="spurious", x=dims, y=dummy, marker_color="orangered"),
+    ], Layout(yaxis=attr(title="Stars", linecolor="black", nticks=2, type="log",
     showgrid=true,
     gridcolor="lightslategrey",
     gridwidth=0.1),
+    yaxis2=attr(title="Runtime (s)", linecolor="black", nticks=2, type="log", side="right", overlaying="y"),
     xaxis=attr(title="Reduced Dimensions", linecolor="black",
     showgrid=true,
     gridcolor="lightslategrey",

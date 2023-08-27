@@ -47,7 +47,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime[i] = result[4]
         if result[8] == 0
-            color_vec1[i] = "orangered"
+            color_vec1[i] = "darkgray"
         end
     end
 
@@ -55,7 +55,9 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
         result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_removed[i] = result[4]
-        if result[8] == 0
+        if result[8] == 0 && color_vec1[i] == "darkgray"
+            color_vec2[i] = "darkgray"
+        elseif result[8] == 0
             color_vec2[i] = "orangered"
         end
     end
@@ -64,18 +66,25 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
         result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=188,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_nopermute[i] = result[4]
-        if result[8] == 0
+        if result[8] == 0 && color_vec1[i] == "darkgray"
+            color_vec3[i] = "darkgray"
+        elseif result[8] == 0
             color_vec3[i] = "orangered"
         end
     end
 
 
     p = plot([
-        scatter(name="without reduction", x=epsilons_text, y=runtime, mode="markers+lines", line=attr(width=3, color="lightblue"), marker=attr(color=color_vec1, size=8)),
-        scatter(name="custom directions", x=epsilons_text, y=runtime_removed, line_color="green", mode="markers+lines",  line=attr(width=3, color="lightslategrey"), marker=attr(color=color_vec2, size=8)),
-        scatter(name="unitvector directions", x=epsilons_text, y=runtime_nopermute, line_color="green", mode="markers+lines",  line=attr(width=3, color="lightcoral"), marker=attr(color=color_vec3, size=8)),
+        scatter(name="without reduction", x=epsilons_text, y=runtime, mode="markers+lines", line=attr(width=8, color="midnightblue"), marker=attr(color=color_vec1, size=8), showlegend=false),
+        scatter(name="custom directions", x=epsilons_text, y=runtime_removed, line_color="green", mode="markers+lines",  line=attr(width=8, color="lightseagreen"), marker=attr(color=color_vec2, size=8), showlegend=false),
+        scatter(name="unitvector directions", x=epsilons_text, y=runtime_nopermute, line_color="green", mode="markers+lines",  line=attr(width=8, color="lightcoral"), marker=attr(color=color_vec3, size=8), showlegend=false),
+
+        scatter(name="without reduction", x=epsilons_text, y=dummy, mode="lines", line=attr(color="midnightblue")),
+        scatter(name="custom directions", x=epsilons_text, y=dummy, mode="lines", line=attr(color="lightseagreen")),
+        scatter(name="unitvector directions", x=epsilons_text, y=dummy, mode="lines", line=attr(color="lightcoral")),
         scatter(name="safe", x=epsilons_text, y=dummy, marker_color="lightgreen", mode="markers"),
-        scatter(name="unsafe", x=epsilons_text, y=dummy, marker_color="orangered", mode="markers"),
+        scatter(name="spurious", x=epsilons_text, y=dummy, marker_color="orangered", mode="markers"),
+        scatter(name="unsafe", x=epsilons_text, y=dummy, marker_color="darkgray", mode="markers"),
     ], Layout(yaxis=attr(title="Runtime (s)", linecolor="black", nticks=4, type="log",
     showgrid=true,
     gridcolor="lightslategrey",

@@ -27,16 +27,16 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #hidden_size2 = 64
 
 #input-dim 784
-input_size = 196
-hidden_size1 = 8
-hidden_size2 = 128
+input_size = 784
+hidden_size1 = 64
+hidden_size2 = 256
 
 
 num_classes = 10
 num_epochs = 2
 batch_size = 32
 learning_rate = 0.001
-onnx_file = 'benchmarks/digits/digit-net_196x8x128x128x128x128x128x10.onnx'
+onnx_file = 'benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()
@@ -100,17 +100,19 @@ test_data = torchdatasets.MNIST(
     download=True,
     transform=ToTensor()
 )
-newtraining_data = []
-for img in training_data.data:
-    newtraining_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
 
-training_data.data = torch.tensor(newtraining_data, dtype=torch.float32)
+#input dim 196
+#newtraining_data = []
+#for img in training_data.data:
+#    newtraining_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
 
-newtest_data = []
-for img in test_data.data:
-    newtest_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
+#training_data.data = torch.tensor(newtraining_data, dtype=torch.float32)
 
-test_data.data = torch.tensor(newtest_data, dtype=torch.float32)
+#newtest_data = []
+#for img in test_data.data:
+#    newtest_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
+
+#test_data.data = torch.tensor(newtest_data, dtype=torch.float32)
 
 train_loader = DataLoader(training_data, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_data, batch_size=64, shuffle=True)

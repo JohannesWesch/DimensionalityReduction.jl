@@ -116,7 +116,7 @@ def create_instances_csv(num_props: int = 15, path: str = "mnistfc_instances.csv
 if __name__ == '__main__':
 
     num_images = 15
-    epsilons = [ 0.026, 0.028, 0.03, 0.032]
+    epsilons = [ 0.011, 0.012, 0.013]
 
     #dimensions 16 and 64
     #dig_data = datasets.load_digits()
@@ -129,11 +129,12 @@ if __name__ == '__main__':
     download=True,
     transform=ToTensor()
 )
-    newtraining_data = []
-    for img in training_data.data:
-        newtraining_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
+    #dim 196
+    #newtraining_data = []
+    #for img in training_data.data:
+    #    newtraining_data.append(downscale_local_mean(img.reshape(28, 28), (2,2)).flatten())
 
-    training_data.data = torch.tensor(newtraining_data, dtype=torch.float32)
+    #training_data.data = torch.tensor(newtraining_data, dtype=torch.float32)
     
     #images, labels = training_data[1]
 
@@ -165,7 +166,7 @@ if __name__ == '__main__':
             #spec_path = f"benchmarks/digits/dim64/prop_{i}_{eps:.2f}.vnnlib"
 
             # input dim 196
-            spec_path = f"benchmarks/digits/dim196/prop_{i}_{eps}.vnnlib" #{eps:.2f}
+            spec_path = f"benchmarks/digits/dim784/prop_{i}_{eps}.vnnlib" #{eps:.2f}
 
             save_vnnlib(input_bounds, label, spec_path)
 

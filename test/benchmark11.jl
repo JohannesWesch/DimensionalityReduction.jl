@@ -31,7 +31,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     p = plot([
         scatter(name="runtime", x=dims, y=runtime, marker_color="blue", mode="markers+lines", line=attr(width=3), yaxis="y2"), #, text=constraints5, textposition="outside"
         bar(name="safe", x=dims, y=stars, marker_color=color_vec),
-        bar(name="unsafe", x=dims, y=dummy, marker_color="orangered"),
+        bar(name="spurious", x=dims, y=dummy, marker_color="orangered"),
     ], Layout(yaxis=attr(title="Stars", linecolor="black", nticks=4,
     showgrid=true,
     gridcolor="lightslategrey",
