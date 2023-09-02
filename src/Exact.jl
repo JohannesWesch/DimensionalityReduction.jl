@@ -15,6 +15,20 @@ function fourier(A, b, d_to_reduce)
     return A, b
 end
 
+function fourier_redundancy_removal(A, b, d_to_reduce)
+    b = vec(b)
+   
+    for i in 1:d_to_reduce
+        h_polyhedra = Polyhedra.hrep(A, b)
+        p_polyhedra = polyhedron(h_polyhedra, CDDLib.Library())
+        reduced = Polyhedra.eliminate(p_polyhedra, FourierMotzkin())
+        h_lazy = LazySets.HPolytope(reduced)
+        LazySets.remove_redundant_constraints!(h_lazy, backend=Gurobi.Optimizer)
+        A, b = tosimplehrep(h_lazy)
+    end
+    return A, b
+end
+
 function block(A, b, d_new, d_old)
     b = vec(b)
     h_polyhedra = Polyhedra.hrep(A, b)

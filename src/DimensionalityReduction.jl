@@ -77,6 +77,8 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
                 A_new, b_new = approximate_unitvector(A, d_new, W₂, box_constraints)
             elseif method == 4
                 A_new, b_new = approximate_support_function(A, b, d_new)
+            elseif method == 5
+                A_new, b_new = fourier_redundancy_removal(A, b, d_to_reduce)
             end
         end
         println(size(A_new))
