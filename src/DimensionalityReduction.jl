@@ -104,8 +104,13 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
         if nnenum
             out = create_output_matrix(vnnlib_input, output_dim)
             result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
+            outputstr = result[1]
         end
-        return
+        safe = 0
+        if result[1] == "safe"
+        safe = 1
+        end
+        return (outputstr, d_old, result[2], round(result[4], digits=4),0, 2*d_old, d_old, safe)
     end
     safe = 0
     if result[1] == "safe"

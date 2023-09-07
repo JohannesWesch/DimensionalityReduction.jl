@@ -6,27 +6,25 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
      
     epsilons = [
-                "benchmarks/digits/dim784/prop_7_0.002.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.003.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.004.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.005.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.006.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.007.vnnlib",
                 "benchmarks/digits/dim784/prop_7_0.008.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.009.vnnlib",
     ]
-    epsilons_text = [0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009]
+    epsilons_text = [0.003, 0.004, 0.005, 0.006, 0.007, 0.008]
 
     runtime = zeros(15,)
     runtime_removed = zeros(15,)
-    runtime_nopermute = zeros(15,)
+    runtime_no = zeros(15,)
     dummy = zeros(15,)
     color_vec1 = fill("lightgreen", 15)
     color_vec2 = fill("lightgreen", 15)
     color_vec3 = fill("lightgreen", 15)
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=720,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=752,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_removed[i] = result[4]
         if result[8] == 0 && color_vec1[i] == "darkgray"
@@ -45,11 +43,22 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
         end
     end
 
+    for (i, epsilon) in enumerate(epsilons)
+        result = reduce(onnx_input, epsilon, output; doreduction=false, method=2, d_to_reduce=0,
+        vnnlib, nnenum, factorization=3, dorefinement)
+        runtime_no[i] = result[4]
+        if result[8] == 0
+            color_vec3[i] = "darkgray"
+        end
+    end
+
 
     p = plot([
         scatter(name="without reduction", x=epsilons_text, y=runtime, mode="markers+lines", line=attr(width=8, color="midnightblue"), marker=attr(color=color_vec1, size=8), showlegend=false),
-        scatter(name="custom directions", x=epsilons_text, y=runtime_removed, line_color="green", mode="markers+lines",  line=attr(width=8, color="lightseagreen"), marker=attr(color=color_vec2, size=8), showlegend=false),
+        scatter(name="custom directions", x=epsilons_text, y=runtime_removed, mode="markers+lines",  line=attr(width=8, color="lightseagreen"), marker=attr(color=color_vec2, size=8), showlegend=false),
+        scatter(name="without factorization", x=epsilons_text, y=runtime_no, mode="markers+lines",  line=attr(width=8, color="violet"), marker=attr(color=color_vec3, size=8), showlegend=false),
 
+        scatter(name="without factorization", x=epsilons_text, y=dummy, mode="lines", line=attr(color="violet")),
         scatter(name="without reduction", x=epsilons_text, y=dummy, mode="lines", line=attr(color="midnightblue")),
         scatter(name="custom directions", x=epsilons_text, y=dummy, mode="lines", line=attr(color="lightseagreen")),
         scatter(name="safe", x=epsilons_text, y=dummy, marker_color="lightgreen", mode="markers"),
@@ -75,4 +84,4 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     p
 end
 
-block_elimination_nnenum("benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx", "benchmarks/digits_reduced", nnenum=true)
+block_elimination_nnenum("benchmarks/digits/digit-net_784x32x256x256x256x256x256x10.onnx", "benchmarks/digits_reduced", nnenum=true)
