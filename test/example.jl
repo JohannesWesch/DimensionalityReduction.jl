@@ -1,10 +1,12 @@
+using DelimitedFiles
 include("../src/DimensionalityReduction.jl")
 import .DimensionalityReduction: reduce
 
+
 #normal example
-reduce("benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx", 
+#=reduce("benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx", 
         "benchmarks/digits/dim784/prop_7_0.012.vnnlib",
-        "benchmarks/digits_reduced", method=2, d_to_reduce=720, nnenum=true, factorization=3, doreduction=false)
+        "benchmarks/digits_reduced", method=2, d_to_reduce=0, nnenum=true, factorization=3)=#
 
 #=reduce("benchmarks/mnistfc/mnist-net_256x2.onnx", 
 "benchmarks/mnistfc/prop_5_0.03.vnnlib",
@@ -36,3 +38,8 @@ reduce("benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx",
 #7
 #"benchmarks/digits/dim16/prop_5_0.01.vnnlib"
 
+
+pertubation = readdlm("Pertubation784.txt", '\t', Float64, '\n')
+reduce("benchmarks/digits/digit-net_784x64x256x256x256x256x256x10.onnx", 
+        "benchmarks/digits/dim784/prop_7_0.001.vnnlib",
+        "benchmarks/digits_reduced", method=6, d_to_reduce=720, nnenum=true, pertubation=pertubation, factorization=3)

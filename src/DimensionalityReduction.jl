@@ -3,6 +3,7 @@ module DimensionalityReduction
 export reduce
 
 using TimerOutputs
+using DelimitedFiles
 include("Constraints.jl")
 include("Approximation.jl")
 include("Exact.jl")
@@ -37,14 +38,21 @@ function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min, d_to_reduce)
     return W₁[:, 1:d_new], W₂
 end
 
-function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
+function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization, pertubation)
     first_matrix = 0
     #if (d_old > 700)
     #    first_matrix = 1
     #end
+    weights = get_w(onnx_input, first_matrix)
+    if ! (pertubation == zeros(0,))
+        weights = weights*pertubation
+    end
+    remove_zero_activation_weights(weights, box_constraints)
 
-    weights = get_w(onnx_input, box_constraints, first_matrix)
     U, Σ, Vᵀ, d_min = decompose(weights)
+    #open("Pertubation784.txt", "w") do io
+    #    writedlm(io, Vᵀ)
+    #end
     println("Minimal Dimension: ", d_min)
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
     W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min, d_to_reduce)
@@ -53,16 +61,21 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, fa
 end
 
 function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_to_reduce=0,
-     vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
+     vnnlib=false, nnenum=false, factorization=0, dorefinement=false, pertubation=zeros(0,))
     outputstr = "didn't run nnenum"
     to = TimerOutput()
     onnx_output = onnx_path(onnx_input, vnnlib_input, output)
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
+    A, b = get_A_b_from_box_alternating(box_constraints)
+
+    if !(pertubation == zeros(0,))
+        box_constraints = exact_box(transpose(pertubation), box_constraints)
+        A = A*pertubation
+    end
 
     if doreduction
-        W₂, d_new, d_min = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization)
-        A, b = get_A_b_from_box_alternating(box_constraints)
+        W₂, d_new, d_min = update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization, pertubation)
         A = round_matrix(A * inv(W₂))
         new_constraints = exact_box(W₂, box_constraints)
 
@@ -79,6 +92,10 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
                 A_new, b_new = approximate_support_function(A, b, d_new)
             elseif method == 5
                 A_new, b_new = fourier_redundancy_removal(A, b, d_to_reduce)
+            elseif method == 6
+                A_new, b_new = approximate_unitvector_lp_solver(A, b, d_new)
+            elseif method == 7
+                A_new, b_new = zeros((0,d_new)), zeros((0,0))
             end
         end
         println(size(A_new))
@@ -102,8 +119,16 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
 
     else
         if nnenum
-            out = create_output_matrix(vnnlib_input, output_dim)
-            result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
+            if pertubation == zeros(0,)
+                out = create_output_matrix(vnnlib_input, output_dim)
+                result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
+            else
+                w = get_w(onnx_input, 0)
+                update_network(onnx_input, onnx_output, w*pertubation, 0)
+                out = create_output_matrix(vnnlib_input, output_dim)
+                result = run_nnenum(onnx_output, box_constraints[:, 1], box_constraints[:, 2], A, b, out)
+
+            end
             outputstr = result[1]
         end
         safe = 0

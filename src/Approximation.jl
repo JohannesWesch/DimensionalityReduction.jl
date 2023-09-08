@@ -91,3 +91,27 @@ function approximate_unitvector(A, new_input_dim, V, bounds)
     end
     return A_new, b_new
 end
+
+function approximate_unitvector_lp_solver(A, b, new_input_dim)
+    b = vec(b)
+    P = HPolytope(A, b)
+
+    j = size(A, 2)
+    A_new = zeros(2*new_input_dim, new_input_dim)
+    b_new = zeros(2*j,)
+
+    Threads.@threads for i in 1:new_input_dim
+        d₁ = zeros(j,)
+        d₂ = zeros(j,)
+        d₁[i] = 1.0
+        d₂[i] = -1.0
+        
+        s₁ = ρ(d₁, P, solver = Gurobi.Optimizer)
+        s₂ = ρ(d₂, P, solver = Gurobi.Optimizer)
+        A_new[2*i - 1, :] = d₁[1:new_input_dim]
+        A_new[2*i, :] = d₂[1:new_input_dim]
+        b_new[2*i - 1] = s₁
+        b_new[2*i] = s₂
+    end
+    return A_new, b_new
+end
