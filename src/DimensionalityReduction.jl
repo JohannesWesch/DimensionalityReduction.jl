@@ -39,11 +39,7 @@ function factorize(U, Σ, Vᵀ, d_new, fact, d_old, d_min, d_to_reduce)
 end
 
 function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, factorization, pertubation)
-    first_matrix = 0
-    #if (d_old > 700)
-    #    first_matrix = 1
-    #end
-    weights = get_w(onnx_input, first_matrix)
+    weights = get_w(onnx_input, 0)
     if ! (pertubation == zeros(0,))
         weights = weights*pertubation
     end
@@ -56,7 +52,7 @@ function update(onnx_input, onnx_output, box_constraints, d_to_reduce, d_old, fa
     println("Minimal Dimension: ", d_min)
     d_new = get_new_dim(d_old, d_min, d_to_reduce)
     W₁, W₂ = factorize(U, Σ, Vᵀ, d_new, factorization, d_old, d_min, d_to_reduce)
-    update_network(onnx_input, onnx_output, W₁, first_matrix)
+    update_network(onnx_input, onnx_output, W₁, 0)
     return W₂, d_new, d_min
 end
 
@@ -68,6 +64,18 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
     vnnlib_output = vnnlib_path(onnx_input, vnnlib_input, output, method)
     box_constraints, d_old, output_dim = get_box_constraints(vnnlib_input)
     A, b = get_A_b_from_box_alternating(box_constraints)
+    #open("PertubationA.txt", "w") do io
+    #    writedlm(io, A)
+    #end
+    #weights = get_w(onnx_input, 0)
+    #if !(pertubation == zeros(0,))
+    #    print("new weights")
+    #    _, _, pertubation,_ = decompose(weights)
+    #    open("PertubationA.txt", "w") do io
+    #        writedlm(io, pertubation)
+    #    end
+    #end
+
 
     if !(pertubation == zeros(0,))
         box_constraints = exact_box(transpose(pertubation), box_constraints)
@@ -121,7 +129,7 @@ function reduce(onnx_input, vnnlib_input, output; doreduction=true, method=0, d_
         if nnenum
             if pertubation == zeros(0,)
                 out = create_output_matrix(vnnlib_input, output_dim)
-                result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], zeros((0,d_old)), zeros((0,0)), out)
+                result = run_nnenum(onnx_input, box_constraints[:, 1], box_constraints[:, 2], A, b, out)
             else
                 w = get_w(onnx_input, 0)
                 update_network(onnx_input, onnx_output, w*pertubation, 0)

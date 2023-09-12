@@ -6,16 +6,17 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     vnnlib=false, nnenum=false, factorization=0, dorefinement=false)
      
     epsilons = [
-                "benchmarks/digits/dim784/prop_7_0.002.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.003.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.004.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.005.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.006.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.007.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.008.vnnlib",
-                "benchmarks/digits/dim784/prop_7_0.009.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.002.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.003.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.004.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.005.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.006.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.007.vnnlib",
+                #"benchmarks/digits/dim784/prop_7_0.008.vnnlib",
+                "benchmarks/digits/dim784/prop_7_0.01.vnnlib",
     ]
-    epsilons_text = [0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009]
+    epsilons_text = [0.01]
+    #[0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009]
 
     runtime = zeros(15,)
     runtime_removed = zeros(15,)
@@ -26,7 +27,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     color_vec3 = fill("lightgreen", 15)
 
     for (i, epsilon) in enumerate(epsilons)
-        result = reduce(onnx_input, epsilon, output; doreduction, method=2, d_to_reduce=720,
+        result = reduce(onnx_input, epsilon, output; doreduction, method=3, d_to_reduce=720,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_removed[i] = result[4]
         if result[8] == 0 && color_vec1[i] == "darkgray"
@@ -45,14 +46,14 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
         end
     end
 
-    for (i, epsilon) in enumerate(epsilons)
+    #=for (i, epsilon) in enumerate(epsilons)
         result = reduce(onnx_input, epsilon, output; doreduction=false, method=2, d_to_reduce=0,
         vnnlib, nnenum, factorization=3, dorefinement)
         runtime_no[i] = result[4]
         if result[8] == 0
             color_vec3[i] = "darkgray"
         end
-    end
+    end0=#
 
 
     p = plot([

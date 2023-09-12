@@ -29,14 +29,14 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #input-dim 784
 input_size = 784
 hidden_size1 = 32
-hidden_size2 = 256
+hidden_size2 = 512
 
 
 num_classes = 10
 num_epochs = 2
 batch_size = 32
 learning_rate = 0.001
-onnx_file = 'benchmarks/digits/digit-net_784x32x256x256x256x256x256x256x256x10.onnx'
+onnx_file = 'benchmarks/digits/digit-net_784x32x512x512x512x512x512x512x512x512x512x10.onnx'
 
 # Load the dataset
 sklearn_data = datasets.load_digits()
@@ -205,9 +205,9 @@ class NeuralNet6(nn.Module):
         # no activation and no softmax at the end
         return out
     
-class NeuralNet8(nn.Module):
+class NeuralNet10(nn.Module):
     def __init__(self, input_size, hidden_size1, hidden_size2, num_classes):
-        super(NeuralNet8, self).__init__()
+        super(NeuralNet10, self).__init__()
         self.input_size = input_size
         self.l0 = nn.Flatten()
         self.l1 = nn.Linear(input_size, hidden_size1)
@@ -226,7 +226,11 @@ class NeuralNet8(nn.Module):
         self.relu7 = nn.ReLU()
         self.l8 = nn.Linear(hidden_size2, hidden_size2)
         self.relu8 = nn.ReLU()
-        self.l9 = nn.Linear(hidden_size2, num_classes)
+        self.l9 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu9 = nn.ReLU()
+        self.l10 = nn.Linear(hidden_size2, hidden_size2)
+        self.relu10 = nn.ReLU()
+        self.l11 = nn.Linear(hidden_size2, num_classes)
 
     def forward(self, x):
         out = self.l0(x)
@@ -247,6 +251,10 @@ class NeuralNet8(nn.Module):
         out = self.l8(out)
         out = self.relu8(out)
         out = self.l9(out)
+        out = self.relu9(out)
+        out = self.l10(out)
+        out = self.relu10(out)
+        out = self.l11(out)
         # no activation and no softmax at the end
         return out
 
@@ -260,7 +268,7 @@ class NeuralNet8(nn.Module):
 #model = NeuralNet6(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # neural net with 8 hidden layers
-model = NeuralNet8(input_size, hidden_size1,hidden_size2, num_classes).to(device)
+model = NeuralNet10(input_size, hidden_size1,hidden_size2, num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()

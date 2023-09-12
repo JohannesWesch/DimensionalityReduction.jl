@@ -67,17 +67,17 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     
 
     p = plot([
-        scatter(name="unitvector overall", x=epsilons_text, y=runtime_overall, mode="markers+lines", line=attr(width=8, color="midnightblue"), marker=attr(color=color_vec1, size=8), showlegend=false),
-        scatter(name="unitvector verification", x=epsilons_text, y=runtime_unitvector, mode="markers+lines",  line=attr(width=8, color="lightseagreen"), marker=attr(color=color_vec1, size=8), showlegend=false),
+        scatter(name="unitvector directions overall", x=epsilons_text, y=runtime_overall, mode="markers+lines", line=attr(width=8, color="lightcoral"), marker=attr(color=color_vec1, size=8), showlegend=false),
+        scatter(name="unitvector directions verification", x=epsilons_text, y=runtime_unitvector, mode="markers+lines",  line=attr(width=4, color="lightcoral"), marker=attr(color=color_vec1, size=8), showlegend=false),
         scatter(name="without factorization", x=epsilons_text, y=runtime_no, mode="markers+lines",  line=attr(width=8, color="violet"), marker=attr(color=color_vec2, size=8), showlegend=false),
 
-        scatter(name="without factorization", x=epsilons_text, y=dummy, mode="lines", line=attr(color="violet")),
-        scatter(name="unitvector overall", x=epsilons_text, y=dummy, mode="lines", line=attr(color="midnightblue")),
-        scatter(name="unitvector verification", x=epsilons_text, y=dummy, mode="lines", line=attr(color="lightseagreen")),
+        scatter(name="without factorization", x=epsilons_text, y=dummy, mode="lines", line=attr(width=8,color="violet")),
+        scatter(name="unitvector directions overall", x=epsilons_text, y=dummy, mode="lines", line=attr(width=8,color="lightcoral")),
+        scatter(name="unitvector directions verification", x=epsilons_text, y=dummy, mode="lines", line=attr(width=4,color="lightcoral")),
         scatter(name="safe", x=epsilons_text, y=dummy, marker_color="lightgreen", mode="markers"),
-        scatter(name="spurious", x=epsilons_text, y=dummy, marker_color="orangered", mode="markers"),
-        scatter(name="unsafe", x=epsilons_text, y=dummy, marker_color="darkgray", mode="markers"),
-    ], Layout(yaxis=attr(title="Runtime (s)", linecolor="black", nticks=4, type="log",
+        #scatter(name="spurious", x=epsilons_text, y=dummy, marker_color="orangered", mode="markers"),
+        #scatter(name="unsafe", x=epsilons_text, y=dummy, marker_color="darkgray", mode="markers"),
+    ], Layout(yaxis=attr(title="Runtime (s)", linecolor="black", nticks=5, type="log",
     showgrid=true,
     gridcolor="lightslategrey",
     gridwidth=0.1),
