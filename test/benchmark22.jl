@@ -16,7 +16,7 @@ function block_elimination_nnenum(onnx_input, output; doreduction=true, method=0
     runtime_customoverall = vec(readdlm("test_vectors\\23-customoverall.txt", '\t', Float64, '\n'))
     runtime_custom = vec(readdlm("test_vectors\\23-custom.txt", '\t', Float64, '\n'))
     runtime_unitvectoroverall = vec(readdlm("test_vectors\\23-unitvectoroverall.txt", '\t', Float64, '\n'))
-    #runtime_unitvector = vec(readdlm("test_vectors\\23-unitvector.txt", '\t', Float64, '\n'))
+    runtime_unitvector = vec(readdlm("test_vectors\\23-unitvector.txt", '\t', Float64, '\n'))
     runtime_no = vec(readdlm("test_vectors\\23-no.txt", '\t', Float64, '\n'))
     color_vec1 =  vec(readdlm("test_vectors\\23-colorvec1.txt", '\t', String, '\n'))
     color_vec2 =  vec(readdlm("test_vectors\\23-colorvec1.txt", '\t', String, '\n'))
